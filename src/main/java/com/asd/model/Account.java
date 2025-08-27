@@ -1,4 +1,4 @@
-package Model;
+package com.asd.model;
 
 enum accountStatus {
     TRANSACTIONAL,
