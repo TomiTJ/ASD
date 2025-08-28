@@ -11,10 +11,12 @@
         List<Transaction> transactions = (List<Transaction>) request.getAttribute("transactions");
         for (Transaction t : transactions) {
     %>
-    <li>ID: <%= t.getId() %>, Amount: <%= t.getAmount() %>, Customer: <%= t.getCustomer().getName() %></li>
+    <li>ID: <%= t.getId() %>, Amount: <%= t.getAmount()%>, Customer: <%= t.getCustomer().getName()%></li>
     <%
         }
     %>
 </ul>
+
+<button><label>Export</label></button>
 </body>
 </html>

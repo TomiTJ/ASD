@@ -3,14 +3,15 @@ package com.asd.model;
 import jakarta.persistence.*;
 
 /*** Notes:
-    - Transaction Attributes:
-        * Transaction ID (001, 002, 003,etc)
-        * Customer (Entity/Class or ID)
+    - Transaction Attributes TBD:
         * Account (ID)
-        * Type (Withdrawal, Deposit, Transfer)
-        * Amount ($ double)
         * Timestamp (date & time)
 ***/
+enum transactionType {
+    WITHDRAWAL,
+    DEPOSIT,
+    TRANSFER
+}
 
 @Entity
 @Table(name = "transactions")
@@ -22,7 +23,7 @@ public class Transaction {
     private Double amount;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     public Transaction() {}
@@ -36,7 +37,6 @@ public class Transaction {
     public int getId() {
         return id;
     }
-
     public double getAmount() {
         return amount;
     }
