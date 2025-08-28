@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.asd</groupId>
-    <artifactId>FlightTracker</artifactId>
+    <artifactId>BankAdmin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>FlightTracker</name>
     <description>FlightTracker</description>
