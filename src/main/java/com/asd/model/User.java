@@ -3,96 +3,95 @@ package com.asd.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Staff user model (planning-only, no JPA yet).
- * When you add JPA later, we’ll annotate with @Entity, @Id, etc.
- */
+import jakarta.persistence.*;
+
+enum Status {
+    ACTIVE,
+    DEACTIVATED
+}
+
+enum Role {
+    ADMIN,
+    READ_ONLY
+}
+
+
+
+@Entity
+@Table(name = "users")
 public class User {
 
-    private Long id;                 // Unique identifier (set by DB later)
-    private String fullName;         // "Jane Doe"
-    private String email;            // login + contact (unique later)
-    private String password;         // store HASH (not plain text) once auth is added
-    private Role role;               // ADMIN or READ_ONLY (MVP)
-    private Status status;           // ACTIVE or DEACTIVATED
-    private LocalDateTime createdAt; // set when user is created
-    private LocalDateTime updatedAt; // update on edits
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    public User() {
-        // default status for new users
-        this.status = Status.ACTIVE;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+    @Column(nullable = false, length = 80)
+    private String fullName;
 
-    public User(Long id, String fullName, String email, String password, Role role, Status status,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    @Column(nullable = false, unique = true, length = 120)
+    private String email;
+
+    // NOTE: store a HASH later; plain field for now to match team simplicity
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Status status = Status.ACTIVE;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    public User() { }
+
+    public User(String fullName, String email, String password, Role role) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.status = status != null ? status : Status.ACTIVE;
-        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
-        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
+        this.status = Status.ACTIVE;
     }
 
-    // Convenience constructor for quick test data
-    public User(String fullName, String email, String password, Role role) {
-        this(null, fullName, email, password, role, Status.ACTIVE, LocalDateTime.now(), LocalDateTime.now());
+    // ---- JPA lifecycle hooks for timestamps ----
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
-    // Getters & setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; touch(); }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; touch(); }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; touch(); }
-
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; touch(); }
-
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; touch(); }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    private void touch() {
+    @PreUpdate
+    protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // equals/hashCode: using email if present (treat as unique username in MVP)
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(email != null ? email.toLowerCase() : null,
-                user.email != null ? user.email.toLowerCase() : null);
-    }
+    // ---- Getters/Setters (minimal) ----
+    public int getId() { return id; }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(email != null ? email.toLowerCase() : null);
-    }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                ", status=" + status +
-                '}';
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
+
+
+

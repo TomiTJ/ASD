@@ -1,13 +1,15 @@
+
+
 package com.asd;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BankManagerApplication {
+public class BankAdminApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BankManagerApplication.class, args);
+        SpringApplication.run(BankAdminApplication.class, args);
     }
 
 }
