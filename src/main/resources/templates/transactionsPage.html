@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Transactions</title>
+</head>
+<body>
+<h1>Transactions</h1>
+<ul>
+    <li th:each="transaction : ${transactions}">
+        Transaction ID: <span th:text="${transaction.id}"></span>,
+        Customer: <span th:text="${transaction.getCustomer().getName()}"></span>,
+        Amount: <span th:text="${transaction.amount}"></span>
+    </li>
+</ul>
+<button><label>Export</label></button>
+</body>
+</html>
