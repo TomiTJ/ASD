@@ -30,7 +30,7 @@ public class Audit {
 
     //who did (which user_id did it)
     @Column(name = "actor_user_id", nullable = false , updatable = false)
-    private UUID userId;
+    private UUID actorUserId;
 
     //what did (e.g. was the interaction create , delete, approving or rejecting etc)
     @Enumerated(EnumType.STRING)
@@ -58,12 +58,11 @@ public class Audit {
     private Instant createdAt;
 
 
-
     public UUID getAuditEventId() {return auditEventId;}
     public void setAuditEventId(UUID auditEventId) {this.auditEventId = auditEventId;}
 
-    public UUID getUserId() {return userId;}
-    public void setUserId(UUID userId) {this.userId = userId;}
+    public UUID getActorUserId() {return actorUserId;}
+    public void setActorUserId(UUID userId) {this.actorUserId = userId;}
 
     public Action getAction() {return action;}
     public void setAction(Action action) {this.action = action;}

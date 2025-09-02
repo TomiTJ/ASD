@@ -22,3 +22,29 @@ INSERT INTO transactions (customer_id, amount) VALUES (1, 765);
 
 INSERT INTO transactions (customer_id, amount) VALUES (2, 2300);
 INSERT INTO transactions (customer_id, amount) VALUES (2, 30);
+
+
+-- Postgres Structure below
+DROP TABLE IF EXISTS audit_event;
+
+CREATE TABLE audit_event (
+                             audit_event_id   UUID PRIMARY KEY,                  -- maps to auditEventId
+                             actor_user_id    UUID      NOT NULL,                -- maps to userId
+                             action           VARCHAR(40) NOT NULL,              -- enum Action
+                             resource_type    VARCHAR(40) NOT NULL,              -- enum ResourceType
+                             resource_id      UUID      NOT NULL,                -- maps to resourceId
+                             request_id       UUID      NOT NULL,                -- trace id
+                             created_at       TIMESTAMPTZ NOT NULL     -- maps to createdAt
+);
+INSERT INTO audit_event (
+    audit_event_id, actor_user_id, action, resource_type,
+    resource_id, request_id, created_at
+) VALUES (
+             '550e8400-e29b-41d4-a716-446655440000',
+             '123e4567-e89b-12d3-a456-426614174000',
+             'CREATE',
+             'Customer',
+             '789e4567-e89b-12d3-a456-426614174999',
+             '321e4567-e89b-12d3-a456-426614174888',
+             '2025-09-02T06:00:00Z'
+         );

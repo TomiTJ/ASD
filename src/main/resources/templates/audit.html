@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Audit</title>
 </head>
 <body>
-
+<h1>Audit</h1>
+<ul>
+    <li th:each="audit : ${audits}">
+        Audit ID: <span th:text="${auditStat.id}"></span>,
+        Customer: <span th:text="${transaction.getCustomer().getName()}"></span>,
+        Amount: <span th:text="${transaction.amount}"></span>
+    </li>
+</ul>
+<button><label>Export</label></button>
 </body>
 </html>
