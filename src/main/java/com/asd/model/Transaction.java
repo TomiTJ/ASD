@@ -2,22 +2,45 @@ package com.asd.model;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+/*** Notes:
+    - Transaction Attributes TBD:
+        * Account (ID)
+        * Timestamp (date & time)
+***/
+enum transactionType {
+    WITHDRAWAL,
+    DEPOSIT,
+    TRANSFER
+}
 
 @Entity
+@Table(name = "transactions")
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
-    private String type;
-    private BigDecimal amount;
-    private LocalDateTime date;
+    private Double amount;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
-    private String description;
+    public Transaction() {}
+
+    public Transaction(Customer customer, Double amount) {
+        this.customer = customer;
+        this.amount = amount;
+
+    }
+
+    public int getId() {
+        return id;
+    }
+    public double getAmount() {
+        return amount;
+    }
+    public Customer getCustomer() {
+        return customer;
+    }
 }

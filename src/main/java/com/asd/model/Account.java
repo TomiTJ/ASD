@@ -1,25 +1,72 @@
 package com.asd.model;
 
-import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
+enum accountStatus {
+    TRANSACTIONAL,
+    SAVINGS,
+    CREDIT,
+    BUSINESS
+}
 
-import java.util.List;
-@Entity
+enum accountType {
+    OPEN,
+    CLOSED,
+    FROZEN
+}
+
 public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private String accountNumber;
+    private int accountNumber;
+    private int userId;
+    private accountStatus accountStatus;
+    private accountType accountType;
     private double balance;
 
-    @ManyToOne
-    @JoinColumn(name="customer_id")
-    private Customer customer;
+    public Account (int accountNumber, int userID, accountStatus accountStatus, accountType accountType, double balance) {
+        this.accountNumber = accountNumber;
+        this.userId = userID;
+        this.accountStatus = accountStatus;
+        this.accountType = accountType;
+        this.balance = balance;
+    }
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    public int getAccountNumber() {
+        return accountNumber;
+    }
 
-    private boolean active;
+    public void setAccountNumber(int accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public accountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(accountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public accountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(accountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 
 }

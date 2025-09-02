@@ -1,23 +1,31 @@
 package com.asd.model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.Fetch;
-
-import java.util.List;
 
 @Entity
+@Table(name = "customers")
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
-    private String lastName;
+
+    private String name;
     private String email;
-    private String phone;
 
-    @OneToMany(mappedBy = "customer", cascade =  CascadeType.ALL)
-    private List<Account> accounts ;
+    public Customer() {}
 
-
+    public Customer(Long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+    public Long getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getEmail() {
+        return email;
+    }
 }
