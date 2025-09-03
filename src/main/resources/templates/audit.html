@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Audits</title>
 </head>
 <body>
+<h1> Audits</h1>
+<ul>
+    <li th:each="audit : ${audits}">
+        Audit Event ID: <span th:text="${getAuditEventId}" > </span>,
+
+    </li>
+</ul>
 
 </body>
 </html>
