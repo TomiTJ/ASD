@@ -1,25 +1,23 @@
 package com.asd.model;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 import jakarta.persistence.*;
-
-enum Status {
-    ACTIVE,
-    DEACTIVATED
-}
-
-enum Role {
-    ADMIN,
-    READ_ONLY
-}
-
-
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
 public class User {
+
+
+    public enum Role {
+        ADMIN,
+        READ_ONLY
+    }
+
+    public enum Status {
+        ACTIVE,
+        DEACTIVATED
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +29,6 @@ public class User {
     @Column(nullable = false, unique = true, length = 120)
     private String email;
 
-    // NOTE: store a HASH later; plain field for now to match team simplicity
     @Column(nullable = false)
     private String password;
 
@@ -49,7 +46,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public User() { }
+
+    public User() {}
 
     public User(String fullName, String email, String password, Role role) {
         this.fullName = fullName;
@@ -59,19 +57,21 @@ public class User {
         this.status = Status.ACTIVE;
     }
 
-    // ---- JPA lifecycle hooks for timestamps ----
+
     @PrePersist
     protected void onCreate() {
+        if (email != null) email = email.trim().toLowerCase();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
     protected void onUpdate() {
+        if (email != null) email = email.trim().toLowerCase();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ---- Getters/Setters (minimal) ----
+
     public int getId() { return id; }
 
     public String getFullName() { return fullName; }
@@ -92,6 +92,7 @@ public class User {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
+
 
 
 
