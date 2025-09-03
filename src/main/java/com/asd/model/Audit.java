@@ -1,10 +1,10 @@
 package com.asd.model;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.Instant;
+import lombok.Data;
 /* Notes:
  - Audit
 
@@ -17,7 +17,7 @@ enum Action {
 enum ResourceType {
     User, Customer, Account, Transaction
 }
-
+@Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "audit_event")
@@ -59,26 +59,6 @@ public class Audit {
 
 
 
-    public UUID getAuditEventId() {return auditEventId;}
-    public void setAuditEventId(UUID auditEventId) {this.auditEventId = auditEventId;}
-
-    public UUID getUserId() {return userId;}
-    public void setUserId(UUID userId) {this.userId = userId;}
-
-    public Action getAction() {return action;}
-    public void setAction(Action action) {this.action = action;}
-
-    public ResourceType getResourceType() {return resourceType;}
-    public void setResourceType(ResourceType resourceType) {this.resourceType = resourceType;}
-
-    public UUID getResourceId() {return resourceId;}
-    public void setResourceId(UUID resourceId) {this.resourceId = resourceId;}
-
-    public UUID getRequestId() {return requestId;}
-    public void setRequestId(UUID requestId) {this.requestId = requestId;}
-
-    public Instant getCreatedAt() {return createdAt;}
-    public void setCreatedAt(Instant createdAt) {this.createdAt = createdAt;}
 
 
 
