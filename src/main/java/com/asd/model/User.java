@@ -3,21 +3,20 @@ package com.asd.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+
+enum Role {
+    ADMIN,
+    READ_ONLY
+}
+
+enum Status {
+    ACTIVE,
+    DEACTIVATED
+}
+
 @Entity
 @Table(name = "users")
 public class User {
-
-
-    public enum Role {
-        ADMIN,
-        READ_ONLY
-    }
-
-    public enum Status {
-        ACTIVE,
-        DEACTIVATED
-    }
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
