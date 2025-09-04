@@ -14,10 +14,10 @@ public class LoanApplication {
     private Long id;
 
     @Column(nullable = false)
-    private Long customerId;  // FK to customers.id (no join to keep it simple)  // uses your Customer entity
+    private Long customerId;  // FK to customers.id (no join to keep it simple) uses your Customer entity
 
     @Column(nullable = false)
-    private String product;   // simple text like "Personal Loan"
+    private String product;   // simple text like
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal principal;
