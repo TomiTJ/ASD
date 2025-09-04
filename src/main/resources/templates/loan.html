@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Loan Demo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+        h1 { margin: 0 0 12px }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; }
+        label { display:block; font-size: 12px; color:#555; margin-top:8px }
+        input, select, button, textarea { padding: 8px; border:1px solid #ccc; border-radius:8px; width:100% }
+        table { width:100%; border-collapse: collapse; margin-top: 8px }
+        th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; font-size: 14px }
+        .row { display:flex; gap:8px; align-items:center }
+        .btn { cursor:pointer; }
+        .ok { background:#10b981; color:white; border:none }
+        .bad { background:#ef4444; color:white; border:none }
+        .muted { color:#666; font-size:12px }
+    </style>
+</head>
+<body>
+<h1>Loan Application Demo </h1>
+<div class="grid">
+    <div class="card">
+        <h2>Customer – Apply</h2>
+        <label>Customer ID (from customers table)</label>
+        <input id="cId" type="number" placeholder="e.g. 1" />
+        <label>Product</label>
+        <input id="prod" placeholder="Personal Loan" />
+        <label>Amount ($)</label>
+        <input id="amt" type="number" placeholder="5000" />
+        <div class="row" style="margin-top:10px">
+            <button class="btn" onclick="submitApp()">Submit Application</button>
+            <span id="msg" class="muted"></span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Admin – Review</h2>
+        <div class="row">
+            <label>Status filter</label>
+            <select id="flt" onchange="loadApps()">
+                <option value="">All</option>
+                <option>SUBMITTED</option>
+                <option>APPROVED</option>
+                <option>REJECTED</option>
+            </select>
+        </div>
+        <table>
+            <thead><tr><th>ID</th><th>Customer</th><th>Product</th><th>Principal</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="rows"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const $ = (id)=>document.getElementById(id);
+
+    async function submitApp() {
+        const payload = {
+            customerId: Number($('cId').value),
+            product: $('prod').value || 'Personal Loan',
+            principal: Number($('amt').value || '0')
+        };
+        $('msg').textContent = 'Submitting...';
+        const res = await fetch('/api/loan-applications', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+        });
+        if(!res.ok){ $('msg').textContent = 'Error submitting.'; return; }
+        const data = await res.json();
+        $('msg').textContent = 'Submitted ID ' + data.id + ' (status ' + data.status + ')';
+        loadApps();
+    }
+
+    async function loadApps() {
+        const q = $('flt').value ? ('?status=' + $('flt').value) : '';
+        const res = await fetch('/api/loan-applications' + q);
+        const list = await res.json();
+        $('rows').innerHTML = list.map(a => `
+    <tr>
+      <td>${a.id}</td>
+      <td>${a.customerId}</td>
+      <td>${a.product}</td>
+      <td>$${Number(a.principal).toLocaleString()}</td>
+      <td>${a.status}</td>
+      <td>
+        ${a.status === 'SUBMITTED'
+            ? '<button class="ok" onclick="decide('+a.id+',true)">Approve</button> ' +
+            '<button class="bad" onclick="decide('+a.id+',false)">Reject</button>'
+            : '<span class="muted">No action</span>'}
+      </td>
+    </tr>`).join('');
+    }
+    async function decide(id, approve) {
+        await fetch('/api/loan-applications/'+id+'/decision', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ approve, notes: approve ? 'ok' : 'not eligible' })
+        });
+        loadApps();
+    }
+
+    loadApps();
+</script>
+</body>
+</html>
