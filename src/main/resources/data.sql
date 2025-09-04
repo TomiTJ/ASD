@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
-                          id SERIAL PRIMARY KEY,
-                          name TEXT NOT NULL,
-                          email TEXT
+                           id SERIAL PRIMARY KEY,
+                           name TEXT NOT NULL,
+                           email TEXT
 );
 
 INSERT INTO customers (id, name, email) VALUES (1, 'John', 'john@example.com');
@@ -11,10 +11,10 @@ INSERT INTO customers (id, name, email) VALUES (2,'Bob', 'bob@email.com');
 
 
 CREATE TABLE transactions (
-                             id SERIAL PRIMARY KEY,
-                             customer_id INTEGER NOT NULL,
-                             amount REAL,
-                             FOREIGN KEY (customer_id) REFERENCES customers(id)
+                              id SERIAL PRIMARY KEY,
+                              customer_id INTEGER NOT NULL,
+                              amount REAL,
+                              FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
 
 INSERT INTO transactions (customer_id, amount) VALUES (1, 550);
@@ -34,7 +34,7 @@ CREATE TABLE audit_event (
                              resource_type    TEXT NOT NULL,
                              resource_id      TEXT NOT NULL,
                              request_id       TEXT NOT NULL,
-                             created_at       TEXT NOT NULL
+                             created_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now'))
 );
 INSERT INTO audit_event (
     audit_event_id,
@@ -51,7 +51,7 @@ INSERT INTO audit_event (
              'Customer',
              'bbbb1111-bbbb-1111-bbbb-111111111111',
              'cccc1111-cccc-1111-cccc-111111111111',
-             '2025-09-03T08:00:00Z'
+             '2025-09-03 08:00:00.000'
          );
 
 INSERT INTO audit_event (
@@ -69,7 +69,7 @@ INSERT INTO audit_event (
              'Account',
              'bbbb2222-bbbb-2222-bbbb-222222222222',
              'cccc2222-cccc-2222-cccc-222222222222',
-             '2025-09-03T09:15:00Z'
+             '2025-09-03 09:15:00.000'
          );
 
 INSERT INTO audit_event (
@@ -87,8 +87,5 @@ INSERT INTO audit_event (
              'Transaction',
              'bbbb3333-bbbb-3333-bbbb-333333333333',
              'cccc3333-cccc-3333-cccc-333333333333',
-             '2025-09-03T10:45:00Z'
+             '2025-09-03 10:45:00.000'
          );
-UPDATE audit_event
-SET created_at = '2025-09-03 08:00:00.000'
-WHERE created_at = '2025-09-03T08:00:00Z';
