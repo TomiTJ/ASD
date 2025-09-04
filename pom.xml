@@ -59,6 +59,7 @@
         </dependency>
 
 
+
         <!-- Hibernate-->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -79,6 +80,7 @@
             <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

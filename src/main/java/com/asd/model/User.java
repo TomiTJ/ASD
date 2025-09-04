@@ -1,22 +1,25 @@
 package com.asd.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 
-enum Role {
-    ADMIN,
-    READ_ONLY
-}
-
-enum Status {
-    ACTIVE,
-    DEACTIVATED
-}
-
+@Data
 @Entity
 @Table(name = "users")
 public class User {
+
+
+    public enum Status {
+        ACTIVE,
+        DEACTIVATED
+    }
+
+    public enum Role {
+            ADMIN,
+        READ_ONLY
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,25 +74,7 @@ public class User {
     }
 
 
-    public int getId() { return id; }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
 
 

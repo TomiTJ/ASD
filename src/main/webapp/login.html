@@ -1,21 +1,30 @@
 <!doctype html>
-<html>
-    <head><meta charset="utf-8"><title>Bank Admin — Login</title></head>
-    <body>
-        <h2>Bank Admin — Login</h2>
-        <form method="post" action="/login">
-            <label>Email</label><br/>
-            <input type="text" name="username" autocomplete="username"><br/><br/>
-            <label>Password</label><br/>
-            <input type="password" name="password" autocomplete="current-password"><br/><br/>
-            <button type="submit">Sign in</button>
-        </form>
+<html lang="">
+<head><meta charset="utf-8"><title>Bank Admin — Login</title></head>
+<body>
+<h2>Bank Admin — Login</h2>
 
-        <p id="msg" style="color:red; display:none;">Invalid credentials</p>
+<form method="post" action="/login">
+    <label>Email</label><br>
+    <input type="text" name="email" required autocomplete="username"><br><br>
 
-        <script>
-            const p = new URLSearchParams(location.search);
-            if (p.has('error')) document.getElementById('msg').style.display='block';
-        </script>
+    <label>Password</label><br>
+    <input type="password" name="password" required autocomplete="current-password"><br><br>
+
+    <button type="submit">Sign in</button>
+</form>
+
+<p id="msg" style="color:red;"></p>
+<script>
+    const p = new URLSearchParams(location.search);
+    const map = {
+        badcreds: 'Invalid email or password.',
+        notfound: 'User not found.',
+        inactive: 'Account is deactivated.',
+    };
+    if (p.has('logout')) document.getElementById('msg').textContent = 'Logged out.';
+    if (p.get('error')) document.getElementById('msg').textContent = map[p.get('error')] || 'Login error.';
+</script>
 </body>
 </html>
+
