@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bank Admin — Customer Accounts</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { font-size: 20px; margin: 0 0 10px; }
+        section { margin: 16px 0; }
+        label { display: inline-block; margin: 6px 8px 6px 0; }
+        input, select, button { padding: 6px 8px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        .small { color:#555; font-size:12px; }
+    </style>
+</head>
+<body>
+<!-- Static UI only. No JavaScript; nothing is wired up. -->
+<h1>Customer Account Management </h1>
+
+<!-- Filters (static) -->
+<section id="filters">
+    <h2 style="font-size:16px; margin:0 0 8px;">Filter</h2>
+    <label>Search (Name or Account #) <input type="text" placeholder="e.g. Jane or 1000456789" /></label>
+</section>
+
+<!-- Accounts list (static table) -->
+<section id="list">
+    <h2 style="font-size:16px; margin:0 0 8px;">Accounts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th style="width:70px">ID</th>
+            <th style="width:150px">Account #</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th style="width:120px">Type</th>
+            <th style="width:130px">Balance (AUD)</th>
+            <th style="width:110px">Status</th>
+            <th style="width:230px">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>—</td>
+            <td>0000000000</td>
+            <td>Example Name</td>
+            <td>example@email.com</td>
+            <td>SAVINGS</td>
+            <td>0.00</td>
+            <td>ACTIVE</td>
+            <td>
+                <button type="button">Edit</button>
+                <button type="button">Freeze</button>
+                <button type="button">Close</button>
+                <button type="button">Delete</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" class="small">Add more rows here…</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- Create/Update form (static) -->
+<section id="form">
+    <h2 style="font-size:16px; margin:0 0 8px;">Create / Update Customer Account</h2>
+    <form>
+        <div style="margin:6px 0;">
+            <label>Account # <input required placeholder="e.g. 1000456789" /></label>
+            <label>Name <input required placeholder="Jane Doe" /></label>
+            <label>Email <input type="email" required placeholder="jane@example.com" /></label>
+        </div>
+        <div style="margin:6px 0;">
+            <label>Type
+                <select required>
+                    <option value="">Select…</option>
+                    <option>SAVINGS</option>
+                    <option>CHECKING</option>
+                    <option>TERM</option>
+                </select>
+            </label>
+            <label>Status
+                <select required>
+                    <option>ACTIVE</option>
+                    <option>FROZEN</option>
+                    <option>CLOSED</option>
+                </select>
+            </label>
+            <label>Balance (AUD) <input type="number" step="0.01" value="0.00" style="width:140px"/></label>
+        </div>
+        <div style="margin:6px 0;">
+            <button type="submit">Save</button>
+            <button type="reset">Reset</button>
+        </div>
+    </form>
+</section>
+</body>
+</html>
