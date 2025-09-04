@@ -4,20 +4,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.Instant;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 /* Notes:
  - Audit
 
  */
 
-enum Action {
-    CREATE, UPDATE, DELETE, APPROVE, REJECT, RESET_PASSWORD, APPROVE_PASSWORD, REJECT_PASSWORD
-}
-
-enum ResourceType {
-    User, Customer, Account, Transaction
-}
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "audit_event")
@@ -30,7 +27,7 @@ public class Audit {
 
     //who did (which user_id did it)
     @Column(name = "actor_user_id", nullable = false , updatable = false)
-    private UUID userId;
+    private UUID actorUserId;
 
     //what did (e.g. was the interaction create , delete, approving or rejecting etc)
     @Enumerated(EnumType.STRING)

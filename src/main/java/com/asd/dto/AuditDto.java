@@ -15,7 +15,7 @@ import lombok.Data;
 @Builder
 public class AuditDto {
     private UUID auditEventId;
-    private UUID userId;
+    private UUID actorUserId;
     private Action action;
     private ResourceType resourceType;
     private  UUID resourceId;
