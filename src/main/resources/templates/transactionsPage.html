@@ -1,17 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/transactions-layout.css">
     <title>Transactions</title>
 </head>
-<body>
-<h1>Transactions</h1>
-<ul>
-    <li th:each="transaction : ${transactions}">
-        Transaction ID: <span th:text="${transaction.id}"></span>,
-        Customer: <span th:text="${transaction.getCustomer().getName()}"></span>,
-        Amount: <span th:text="${transaction.amount}"></span>
-    </li>
-</ul>
-<button><label>Export</label></button>
-</body>
+    <body>
+    <div class="main-layout">
+        <div class="top-bar">
+            <div class="name-card">
+                <div>John Doe</div>
+                <div class="position">Admin</div>
+            </div>
+            <div class="img-placeholder"> </div>
+
+
+        </div>
+        <div class="navbar">
+            <div class="app-name"><img src="../static/icons/templogo.svg" alt="Logo"><span>Admin Bank App</span></div>
+            <div class="nav-items">
+                <div> <img src="../static/icons/dashboard.svg" alt="Icon">
+                    <span>Dashboard</span>
+                </div>
+                <div><img src="../static/icons/accounts.svg" alt="Icon"><span>Accounts</span></div>
+                <div><img src="../static/icons/transaction.svg" alt="Icon"><span>Transactions</span></div>
+                <div><img src="../static/icons/reports.svg" alt="Icon"><span>Reports</span></div>
+                <div><img src="../static/icons/settings.svg" alt="Icon"><span>Settings</span></div>
+            </div>
+        </div>
+
+        <div class="main-content-container">
+            <div><h4>Transaction Monitoring</h4>
+                <button><label>Export</label></button></div>
+
+            <div class="search-filter-container">
+                <h4>Search & Filter</h4>
+                <div class="search-filter-items">
+                    <div>
+                        <form>
+                            <input type="text" id="search" name="search" placeholder="Search by customer, transaction ID, etc... ">
+                        </form>
+                    </div>
+                    <div>
+                        <select name="status" id="status">
+                            <option value="all-status">All Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="flagged">Flagged</option>
+                            <option value="pending">Pending</option>
+                        </select>
+
+                    </div>
+                    <div>
+                        <select name="types" id="types">
+                            <option value="all-types">All Types</option>
+                            <option value="deposit">Completed</option>
+                            <option value="withdrawal">Failed</option>
+                            <option value="transfer">Flagged</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4>Transactions List</h4>
+
+                <table>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Customer</th>
+                        <th>Account</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>John</td>
+                        <td>001</td>
+                        <td>Deposit</td>
+                        <td>550</td>
+                        <td>Pending</td>
+                        <td>Timestamp</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Mike</td>
+                        <td>023</td>
+                        <td>Withdrawal</td>
+                        <td>92339</td>
+                        <td>Complete</td>
+                        <td>Timestamp</td>
+                    </tr>
+
+                    <tr th:each="transaction : ${transactions}">
+                        <td th:text="${transaction.id}"></td>
+                        <td th:text="${transaction.getCustomer().getName()}"></td>
+                        <td th:text="${transaction.amount}"></td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="footer"></div>
+    </div>
+    </body>
 </html>

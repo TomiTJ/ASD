@@ -1,5 +1,10 @@
 package com.asd.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
 enum accountStatus {
     TRANSACTIONAL,
     SAVINGS,
@@ -13,8 +18,13 @@ enum accountType {
     FROZEN
 }
 
+@Data
+@Entity
+@Table(name="account")
 public class Account {
 
+    @Id
+    private Long id;
     private int accountNumber;
     private int userId;
     private accountStatus accountStatus;
@@ -29,44 +39,8 @@ public class Account {
         this.balance = balance;
     }
 
-    public int getAccountNumber() {
-        return accountNumber;
-    }
 
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
-    }
+    public Account() {
 
-    public int getUserId() {
-        return userId;
     }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public accountStatus getAccountStatus() {
-        return accountStatus;
-    }
-
-    public void setAccountStatus(accountStatus accountStatus) {
-        this.accountStatus = accountStatus;
-    }
-
-    public accountType getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(accountType accountType) {
-        this.accountType = accountType;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
 }
