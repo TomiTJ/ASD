@@ -1,3 +1,24 @@
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       fullName TEXT NOT NULL,
+                       email TEXT NOT NULL UNIQUE,
+                       password TEXT NOT NULL,
+                       role TEXT NOT NULL,       -- 'ADMIN' or 'READ_ONLY'
+                       status TEXT NOT NULL,     -- 'ACTIVE' or 'DEACTIVATED'
+                       createdAt TEXT NOT NULL,
+                       updatedAt TEXT NOT NULL
+);
+
+-- Seed known-good users
+INSERT INTO users (fullName, email, password, role, status, createdAt, updatedAt) VALUES
+    ('Admin User', 'admin@bank.local', 'admin123', 'ADMIN', 'ACTIVE', datetime('now'), datetime('now'));
+
+INSERT INTO users (fullName, email, password, role, status, createdAt, updatedAt) VALUES
+    ('Viewer User', 'viewer@bank.local', 'viewer123', 'READ_ONLY', 'ACTIVE', datetime('now'), datetime('now'));
+
+
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
                           id INTEGER PRIMARY KEY AUTOINCREMENT,
