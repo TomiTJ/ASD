@@ -8,18 +8,18 @@
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #ddd; padding: 8px; }
         th { background:#f5f5f5; text-align:left; }
-        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
         a.button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; }
         form.inline { display:inline; margin:0; }
     </style>
 </head>
 <body>
+
+<!-- Navbar Fragment -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
 <div class="top">
     <h2>Users</h2>
-    <div>
-        <a class="button" href="/dashboard">Dashboard</a>
-        <a class="button" href="/users/create">+ Create user</a>
-    </div>
+    <a class="button" href="/users/create">+ Create user</a>
 </div>
 
 <table>
@@ -42,7 +42,6 @@
         <td th:text="${u.status}">ACTIVE</td>
         <td>
             <a th:href="@{'/users/' + ${u.id} + '/edit'}">Edit</a>
-            <!-- Delete will work in a later step -->
             <form class="inline" th:action="@{'/users/' + ${u.id} + '/delete'}" method="post"
                   onsubmit="return confirm('Delete this user?');">
                 <button type="submit">Delete</button>

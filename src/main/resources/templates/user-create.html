@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Create User</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; }
+        label { display:block; margin-top:1rem; }
+        input, select { width:100%; padding:8px; margin-top:4px; }
+        button { margin-top:1rem; padding:8px 12px; border:1px solid #333; border-radius:6px; cursor:pointer; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<h2>Create New User</h2>
+
+<form th:action="@{/users/create}" th:object="${user}" method="post">
+    <label>Full Name</label>
+    <input type="text" th:field="*{fullName}" required>
+
+    <label>Email</label>
+    <input type="email" th:field="*{email}" required>
+
+    <label>Password</label>
+    <input type="password" th:field="*{password}" required>
+
+    <label>Role</label>
+    <select th:field="*{role}">
+        <option th:value="ADMIN">ADMIN</option>
+        <option th:value="READ_ONLY">READ_ONLY</option>
+    </select>
+
+    <label>Status</label>
+    <select th:field="*{status}">
+        <option th:value="ACTIVE">ACTIVE</option>
+        <option th:value="DEACTIVATED">DEACTIVATED</option>
+    </select>
+
+    <button type="submit">Create</button>
+</form>
+
+</body>
+</html>

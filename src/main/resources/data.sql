@@ -7,8 +7,8 @@ CREATE TABLE users (
                        password TEXT NOT NULL,
                        role TEXT NOT NULL,       -- 'ADMIN' or 'READ_ONLY'
                        status TEXT NOT NULL,     -- 'ACTIVE' or 'DEACTIVATED'
-                       created_at TEXT NOT NULL,
-                       updated_at TEXT NOT NULL
+                       created_at INTEGER NOT NULL,
+                       updated_at INTEGER NOT NULL
 );
 
 

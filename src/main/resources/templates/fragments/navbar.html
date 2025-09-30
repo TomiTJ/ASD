@@ -1,0 +1,30 @@
+<!-- templates/fragments/navbar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="navbar">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f4f4f4;">
+        <!-- Navigation links -->
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <!-- Only show "Users" if role is ADMIN -->
+            <a href="/users" th:if="${userRole} == 'ADMIN'"> | Users</a>
+            <!-- Later you can add more links: Accounts, Loans, Transactions -->
+        </div>
+
+        <!-- User info + logout -->
+        <div>
+            <span>
+                Welcome, <b th:text="${userName}"></b>
+                (<span th:text="${userRole}"></span>)
+            </span>
+            <form method="post" action="/logout" style="display:inline">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+    <hr>
+</div>
+</body>
+</html>
+

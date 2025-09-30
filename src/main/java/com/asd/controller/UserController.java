@@ -1,10 +1,13 @@
 package com.asd.controller;
 
+import com.asd.model.User;
 import com.asd.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -34,7 +37,47 @@ public class UserController {
         String guard = requireAdmin(session);
         if (guard != null) return guard;
 
+        // Add navbar context
+        model.addAttribute("userName", session.getAttribute("userName"));
+        model.addAttribute("userRole", session.getAttribute("userRole"));
+
+        // Add users list
         model.addAttribute("users", users.findAll());
-        return "users";
+
+        return "users"; // templates/users.html
+    }
+
+    /** GET /users/create — show create form */
+    @GetMapping("/create")
+    public String showCreateForm(Model model, HttpSession session) {
+        String guard = requireAdmin(session);
+        if (guard != null) return guard;
+
+        model.addAttribute("user", new User());
+
+        // Navbar context
+        model.addAttribute("userName", session.getAttribute("userName"));
+        model.addAttribute("userRole", session.getAttribute("userRole"));
+
+        return "user-create"; // templates/user-create.html
+    }
+
+    /** POST /users/create — process form */
+    @PostMapping("/create")
+    public String createUser(@ModelAttribute("user") User user, HttpSession session) {
+        String guard = requireAdmin(session);
+        if (guard != null) return guard;
+
+        // Defaults (timestamps handled by entity)
+        if (user.getStatus() == null) {
+            user.setStatus(User.Status.ACTIVE);
+        }
+        if (user.getRole() == null) {
+            user.setRole(User.Role.READ_ONLY);
+        }
+
+        users.save(user);
+        return "redirect:/users";
     }
 }
+

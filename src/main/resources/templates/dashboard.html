@@ -1,15 +1,24 @@
-<!DOCTYPE html>
-
-<html lang="eng">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Bank Admin Dashboard</title>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; }
+        a.button, button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; cursor:pointer; }
+    </style>
 </head>
 <body>
-    <h2>Welcome to the Admin Dashboard</h2>
-    <p>This is a placeholder page for Release 1.</p>
-    <form method="post" action="/logout">
-        <button>Logout</button>
-    </form>
+
+<!-- Navbar Fragment -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<h2>Welcome, <span th:text="${userName}">User</span>!</h2>
+<p>Your role: <strong th:text="${userRole}">VIEWER</strong></p>
+
+<hr>
+<p>This is the placeholder dashboard. You can add links to other features here.</p>
+
 </body>
 </html>
 

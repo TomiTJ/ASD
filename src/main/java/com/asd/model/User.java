@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-
 @Data
 @Entity
 @Table(name = "users")
 public class User {
-
 
     public enum Status {
         ACTIVE,
@@ -17,7 +15,7 @@ public class User {
     }
 
     public enum Role {
-            ADMIN,
+        ADMIN,
         READ_ONLY
     }
 
@@ -49,6 +47,7 @@ public class User {
     private LocalDateTime updatedAt;
 
 
+
     public User() {}
 
     public User(String fullName, String email, String password, Role role) {
@@ -58,7 +57,6 @@ public class User {
         this.role = role;
         this.status = Status.ACTIVE;
     }
-
 
     @PrePersist
     protected void onCreate() {
@@ -72,10 +70,8 @@ public class User {
         if (email != null) email = email.trim().toLowerCase();
         this.updatedAt = LocalDateTime.now();
     }
-
-
-
 }
+
 
 
 
