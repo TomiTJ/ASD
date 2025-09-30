@@ -2,20 +2,20 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                       fullName TEXT NOT NULL,
+                       full_name TEXT NOT NULL,
                        email TEXT NOT NULL UNIQUE,
                        password TEXT NOT NULL,
                        role TEXT NOT NULL,       -- 'ADMIN' or 'READ_ONLY'
                        status TEXT NOT NULL,     -- 'ACTIVE' or 'DEACTIVATED'
-                       createdAt TEXT NOT NULL,
-                       updatedAt TEXT NOT NULL
+                       created_at TEXT NOT NULL,
+                       updated_at TEXT NOT NULL
 );
 
--- Seed known-good users
-INSERT INTO users (fullName, email, password, role, status, createdAt, updatedAt) VALUES
+
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
     ('Admin User', 'admin@bank.local', 'admin123', 'ADMIN', 'ACTIVE', datetime('now'), datetime('now'));
 
-INSERT INTO users (fullName, email, password, role, status, createdAt, updatedAt) VALUES
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
     ('Viewer User', 'viewer@bank.local', 'viewer123', 'READ_ONLY', 'ACTIVE', datetime('now'), datetime('now'));
 
 

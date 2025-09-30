@@ -8,21 +8,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PageController {
 
     @GetMapping("/login")
-    public String login() { return "forward:/login.html"; }
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session) {
         if (session.getAttribute("userId") == null) {
             return "redirect:/login";
         }
-        return "forward:/dashboard.html";
+        return "dashboard";
     }
 
     @GetMapping("/")
-    public String root() { return "redirect:/login"; }
+    public String root() {
+        return "redirect:/login";
+    }
 
-    // optional marker page you had:
-    @GetMapping("/users")
-    public String users() { return "forward:/users.html"; }
+//    @GetMapping("/users")
+//    public String users() {
+//        return "users";
+//    }
 }
+
 

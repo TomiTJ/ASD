@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Users</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background:#f5f5f5; text-align:left; }
+        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        a.button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; }
+        form.inline { display:inline; margin:0; }
+    </style>
+</head>
+<body>
+<div class="top">
+    <h2>Users</h2>
+    <div>
+        <a class="button" href="/dashboard">Dashboard</a>
+        <a class="button" href="/users/create">+ Create user</a>
+    </div>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Full name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}">1</td>
+        <td th:text="${u.fullName}">Admin User</td>
+        <td th:text="${u.email}">admin@bank.local</td>
+        <td th:text="${u.role}">ADMIN</td>
+        <td th:text="${u.status}">ACTIVE</td>
+        <td>
+            <a th:href="@{'/users/' + ${u.id} + '/edit'}">Edit</a>
+            <!-- Delete will work in a later step -->
+            <form class="inline" th:action="@{'/users/' + ${u.id} + '/delete'}" method="post"
+                  onsubmit="return confirm('Delete this user?');">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
