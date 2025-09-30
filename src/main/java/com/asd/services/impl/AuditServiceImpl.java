@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuditServiceImpl implements AuditService {
 
-    private AuditRepository auditRepository;
+    private final AuditRepository auditRepository;
 
     public AuditServiceImpl(AuditRepository auditRepository) {
         this.auditRepository = auditRepository;
@@ -47,16 +47,15 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private AuditDto mapToAuditDto(Audit audit) {
-        AuditDto auditDto = AuditDto.builder()
-                .auditEventId(audit.getAuditEventId())
-                .actorUserId(audit.getActorUserId())
-                .action(audit.getAction())
-                .resourceType(audit.getResourceType())
-                .resourceId(audit.getResourceId())
-                .requestId(audit.getRequestId())
-                .createdAt(audit.getCreatedAt())
-                .build();
-        return auditDto;
+      return AuditDto.builder()
+              .auditEventId(audit.getAuditEventId())
+              .actorUserId(audit.getActorUserId())
+              .action(audit.getAction())
+              .resourceType(audit.getResourceType())
+              .resourceId(audit.getResourceId())
+              .requestId(audit.getRequestId())
+              .createdAt(audit.getCreatedAt())
+              .build();
     }
 
 }
