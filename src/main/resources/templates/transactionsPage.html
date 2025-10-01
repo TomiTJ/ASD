@@ -1,69 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/transactions-layout.css">
+    <link rel="stylesheet" th:href="@{css/main.css}">
+    <link rel="stylesheet" th:href="@{css/transactions-layout.css}">
     <title>Transactions</title>
 </head>
     <body>
     <div class="main-layout">
         <div class="top-bar">
             <div class="name-card">
-                <div>John Doe</div>
-                <div class="position">Admin</div>
+                <div th:text="${userName}"></div>
+                <div class="position" th:text="${userRole}"></div>
             </div>
             <div class="img-placeholder"> </div>
-
-
         </div>
-        <div class="navbar">
-            <div class="app-name"><img src="../static/icons/templogo.svg" alt="Logo"><span>Admin Bank App</span></div>
-            <div class="nav-items">
-                <div> <img src="../static/icons/dashboard.svg" alt="Icon">
-                    <span>Dashboard</span>
-                </div>
-                <div><img src="../static/icons/accounts.svg" alt="Icon"><span>Accounts</span></div>
-                <div><img src="../static/icons/transaction.svg" alt="Icon"><span>Transactions</span></div>
-                <div><img src="../static/icons/reports.svg" alt="Icon"><span>Reports</span></div>
-                <div><img src="../static/icons/settings.svg" alt="Icon"><span>Settings</span></div>
-            </div>
-        </div>
+
+        <div th:replace="fragments/navbar2 :: navbar2"></div>
 
         <div class="main-content-container">
-            <div><h4>Transaction Monitoring</h4>
-                <button><label>Export</label></button></div>
+            <div class="heading-container"><h4>Transaction Monitoring</h4>
+                <div>
+                    <a th:href="@{/transactions/download(search=${param.search})}"><button class="btn-style"><label>Export CSV</label></button></a>
+                    <div th:if="${errorMessage}" class="alert" th:text="${errorMessage}"></div>
+                </div>
+            </div>
 
             <div class="search-filter-container">
                 <h4>Search & Filter</h4>
+                <form th:action="@{/transactions}" method="get">
                 <div class="search-filter-items">
-                    <div>
-                        <form>
-                            <input type="text" id="search" name="search" placeholder="Search by customer, transaction ID, etc... ">
-                        </form>
-                    </div>
-                    <div>
-                        <select name="status" id="status">
-                            <option value="all-status">All Status</option>
-                            <option value="completed">Completed</option>
-                            <option value="failed">Failed</option>
-                            <option value="flagged">Flagged</option>
-                            <option value="pending">Pending</option>
-                        </select>
-
-                    </div>
-                    <div>
-                        <select name="types" id="types">
-                            <option value="all-types">All Types</option>
-                            <option value="deposit">Completed</option>
-                            <option value="withdrawal">Failed</option>
-                            <option value="transfer">Flagged</option>
-                        </select>
-                    </div>
+                    <div><input type="text" id="search" name="search" placeholder="Search by customer or transaction ID "></div>
+                    <div><button class="btn-style" type="submit">Apply Filters</button></div>
                 </div>
+                </form>
             </div>
-            <div>
+            <div class="transactions-container">
                 <h4>Transactions List</h4>
-
                 <table>
                     <tr>
                         <th>Transaction ID</th>
@@ -72,31 +44,21 @@
                         <th>Type</th>
                         <th>Amount</th>
                         <th>Status</th>
-                        <th>Timestamp</th>
+                        <th>Time Created</th>
+                        <th>Date Created</th>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>John</td>
-                        <td>001</td>
-                        <td>Deposit</td>
-                        <td>550</td>
-                        <td>Pending</td>
-                        <td>Timestamp</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Mike</td>
-                        <td>023</td>
-                        <td>Withdrawal</td>
-                        <td>92339</td>
-                        <td>Complete</td>
-                        <td>Timestamp</td>
-                    </tr>
-
                     <tr th:each="transaction : ${transactions}">
                         <td th:text="${transaction.id}"></td>
                         <td th:text="${transaction.getCustomer().getName()}"></td>
-                        <td th:text="${transaction.amount}"></td>
+                        <td>[TBA]</td>
+                        <td th:text="${transaction.getType()}"></td>
+                        <td th:text="'$' + ${transaction.getAmount()}"></td>
+                        <td th:text="${transaction.getStatus()}"></td>
+                        <td th:text="${transaction.getTimeCreatedAt()}"></td>
+                        <td th:text="${transaction.getDateCreatedAt()}"></td>
+                    </tr>
+                    <tr th:if="${transactions.isEmpty()}">
+                        <td colspan="8" style="text-align:center; color: gray;">No transactions found</td>
                     </tr>
                 </table>
 
