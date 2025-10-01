@@ -42,12 +42,14 @@ INSERT INTO transactions (customer_id, amount) VALUES (2, 30);
 
 
 
+-- tomi's audit db test --
+create extension if not exists "pgcrypto";
 
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS audit_event CASCADE;
 
-
-DROP TABLE IF EXISTS user;
-CREATE TABLE user (
-                           id SERIAL PRIMARY KEY,
+CREATE TABLE users (
+                           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                            username TEXT NOT NULL,
                            name TEXT NOT NULL,
                            password TEXT NOT NULL,
@@ -59,12 +61,11 @@ CREATE TABLE user (
 
 
 
-INSERT INTO user (id, username, password, email, active)
+INSERT INTO users (id, username, password, email, active)
 VALUES ('11111111-1111-1111-1111-111111111111', 'dummyUser', 'password', 'dummy@example.com', true);
 
 
 
-DROP TABLE IF EXISTS audit_event;
 
 CREATE TABLE audit_event (
                              audit_event_id   TEXT PRIMARY KEY,
