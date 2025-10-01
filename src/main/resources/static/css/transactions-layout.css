@@ -32,6 +32,21 @@
 .search-filter-items > div:first-child{
     flex: 1;
 }
+.alert{
+    color: red;
+}
+.heading-container{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: space-between;
+}
+
+.transactions-container{
+    height: 600px;
+}
+
+
 
 #search{
     width: 100%;
@@ -43,10 +58,9 @@
     border-radius: 5px;
     font-size: 11px;
     outline: none;
-
 }
 
-#status {
+.btn-style{
     font-family: 'Lato', sans-serif;
     background-color: #F3F3F5;
     border: #F3F3F5;
@@ -55,14 +69,6 @@
     outline: none;
 }
 
-#types {
-    font-family: 'Lato', sans-serif;
-    background-color: #F3F3F5;
-    border: #F3F3F5;
-    padding: 5px;
-    border-radius: 5px;
-    outline: none;
-}
 h4{
     margin: 0;
     padding: 10px;

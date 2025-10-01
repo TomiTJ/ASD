@@ -40,17 +40,21 @@ INSERT INTO customers (name, email) VALUES
 -- Transactions table
 CREATE TABLE transactions (
                               id SERIAL PRIMARY KEY,
-                              customer_id INT NOT NULL,
-                              amount NUMERIC,
+                              customer_id INTEGER NOT NULL,
+                              type VARCHAR(50),
+                              amount NUMERIC(12, 2),
+                              status VARCHAR(50),
+                              created_at timestamptz,
+
                               FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
 
-INSERT INTO transactions (customer_id, amount) VALUES
-                                                   (1, 550),
-                                                   (1, 25),
-                                                   (1, 765),
-                                                   (2, 2300),
-                                                   (2, 30);
+INSERT INTO transactions (customer_id, type, amount, status, created_at) VALUES
+    (1, 'DEPOSIT', 550.55, 'PENDING', '2025-02-18 15:30:00+10'),
+    (1, 'DEPOSIT',25.88, 'PENDING', '2025-03-23 08:30:00+10'),
+    (1, 'DEPOSIT',765.21, 'PENDING', '2025-02-04 12:30:00+10'),
+    (2, 'DEPOSIT',2300.32, 'PENDING', '2025-07-13 17:20:10+10'),
+    (2, 'DEPOSIT',30.54, 'PENDING', '2025-09-22 11:50:20+10');
 
 -- Audit events table
 CREATE TABLE audit_event (

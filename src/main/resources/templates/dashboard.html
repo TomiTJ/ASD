@@ -2,23 +2,37 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" th:href="@{css/main.css}">
     <title>Dashboard</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; }
-        a.button, button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; cursor:pointer; }
-    </style>
 </head>
-<body>
-
-<!-- Navbar Fragment -->
-<div th:replace="fragments/navbar :: navbar"></div>
-
-<h2>Welcome, <span th:text="${userName}">User</span>!</h2>
-<p>Your role: <strong th:text="${userRole}">VIEWER</strong></p>
-
-<hr>
-<p>This is the placeholder dashboard. You can add links to other features here.</p>
-
-</body>
+    <body>
+    <div class="main-layout">
+        <div class="top-bar">
+            <div class="name-card">
+                <div th:text="${userName}"></div>
+                <div class="position" th:text="${userRole}"></div>
+            </div>
+            <div class="img-placeholder"></div>
+        </div>
+        <div th:replace="fragments/navbar2 :: navbar2"></div>
+        <div class="main-content-container">
+            <div>
+                <h2>Welcome, <span th:text="${userName}">User</span>!</h2>
+                <p>Your role: <strong th:text="${userRole}">VIEWER</strong></p>
+                <hr>
+                <p>This is the placeholder dashboard. You can add links to other features here.</p>
+                <div>
+                <span>
+                    Welcome, <b th:text="${userName}"></b>(<span th:text="${userRole}"></span>)
+                </span>
+                    <form method="post" action="/logout" style="display:inline">
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="footer"></div>
+    </div>
+    </body>
 </html>
 

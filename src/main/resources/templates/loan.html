@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <title>Loan Demo</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" th:href="@{css/main.css}">
+
     <style>
-        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
         h1 { margin: 0 0 12px }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; }
@@ -21,39 +22,56 @@
     </style>
 </head>
 <body>
-<h1>Loan Application Demo </h1>
-<div class="grid">
-    <div class="card">
-        <h2>Customer – Apply</h2>
-        <label>Customer ID (from customers table)</label>
-        <input id="cId" type="number" placeholder="e.g. 1" />
-        <label>Product</label>
-        <input id="prod" placeholder="Personal Loan" />
-        <label>Amount ($)</label>
-        <input id="amt" type="number" placeholder="5000" />
-        <div class="row" style="margin-top:10px">
-            <button class="btn" onclick="submitApp()">Submit Application</button>
-            <span id="msg" class="muted"></span>
+<div class="main-layout">
+    <div class="top-bar">
+        <div class="name-card">
+            <div th:text="${userName}"></div>
+            <div class="position" th:text="${userRole}"></div>
         </div>
+        <div class="img-placeholder"></div>
     </div>
+    <div th:replace="fragments/navbar2 :: navbar2"></div>
+    <div class="main-content-container">
+        <div>
+            <h1>Loan Application Demo </h1>
+            <div class="grid">
+                <div class="card">
+                    <h2>Customer – Apply</h2>
+                    <label>Customer ID (from customers table)</label>
+                    <input id="cId" type="number" placeholder="e.g. 1" />
+                    <label>Product</label>
+                    <input id="prod" placeholder="Personal Loan" />
+                    <label>Amount ($)</label>
+                    <input id="amt" type="number" placeholder="5000" />
+                    <div class="row" style="margin-top:10px">
+                        <button class="btn" onclick="submitApp()">Submit Application</button>
+                        <span id="msg" class="muted"></span>
+                    </div>
+                </div>
 
-    <div class="card">
-        <h2>Admin – Review</h2>
-        <div class="row">
-            <label>Status filter</label>
-            <select id="flt" onchange="loadApps()">
-                <option value="">All</option>
-                <option>SUBMITTED</option>
-                <option>APPROVED</option>
-                <option>REJECTED</option>
-            </select>
+                <div class="card">
+                    <h2>Admin – Review</h2>
+                    <div class="row">
+                        <label>Status filter</label>
+                        <select id="flt" onchange="loadApps()">
+                            <option value="">All</option>
+                            <option>SUBMITTED</option>
+                            <option>APPROVED</option>
+                            <option>REJECTED</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead><tr><th>ID</th><th>Customer</th><th>Product</th><th>Principal</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="rows"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <table>
-            <thead><tr><th>ID</th><th>Customer</th><th>Product</th><th>Principal</th><th>Status</th><th>Action</th></tr></thead>
-            <tbody id="rows"></tbody>
-        </table>
     </div>
+    <div class="footer"></div>
 </div>
+<body>
+
 
 <script>
     const $ = (id)=>document.getElementById(id);
