@@ -10,21 +10,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Checking dependencies
-  displayName: 'Running check'
-
-
-- script: echo Finish check
-  displayName: 'Successful check'
-
-- script: echo Testing Features
-  displayName: 'Testing Features...'
-
-- script: echo Feature success
-  displayName: 'SUCCESS'
-
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'package'
