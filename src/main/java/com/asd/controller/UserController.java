@@ -5,10 +5,7 @@ import com.asd.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/users")
@@ -79,5 +76,55 @@ public class UserController {
         users.save(user);
         return "redirect:/users";
     }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session) {
+        String guard = requireAdmin(session);
+        if (guard != null) return guard;
+
+        com.asd.model.User user = users.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+
+        model.addAttribute("user", user);
+        model.addAttribute("userName", session.getAttribute("userName"));
+        model.addAttribute("userRole", session.getAttribute("userRole"));
+
+        return "user-edit";  // new template
+    }
+
+
+    @PostMapping("/edit/{id}")
+    public String updateUser(@PathVariable("id") int id,
+                             @ModelAttribute("user") com.asd.model.User updatedUser,
+                             HttpSession session) {
+        String guard = requireAdmin(session);
+        if (guard != null) return guard;
+
+        com.asd.model.User user = users.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+
+        // Update fields
+        user.setFullName(updatedUser.getFullName());
+        user.setEmail(updatedUser.getEmail());
+        user.setPassword(updatedUser.getPassword());
+        user.setRole(updatedUser.getRole());
+        user.setStatus(updatedUser.getStatus());
+
+        users.save(user);  // save updated
+        return "redirect:/users";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable int id, HttpSession session) {
+        String guard = requireAdmin(session);
+        if (guard != null) return guard;
+
+        users.deleteById(id);
+        return "redirect:/users";
+    }
+
+
+
+
 }
 

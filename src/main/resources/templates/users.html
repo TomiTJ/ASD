@@ -41,11 +41,12 @@
         <td th:text="${u.role}">ADMIN</td>
         <td th:text="${u.status}">ACTIVE</td>
         <td>
-            <a th:href="@{'/users/' + ${u.id} + '/edit'}">Edit</a>
-            <form class="inline" th:action="@{'/users/' + ${u.id} + '/delete'}" method="post"
+            <a th:href="@{/users/edit/{id}(id=${u.id})}">Edit</a>
+            <form class="inline" th:action="@{/users/delete/{id}(id=${u.id})}" method="post"
                   onsubmit="return confirm('Delete this user?');">
                 <button type="submit">Delete</button>
             </form>
+
         </td>
     </tr>
     </tbody>
