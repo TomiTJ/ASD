@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,8 +26,8 @@ public interface AuditRepository extends JpaRepository<Audit, UUID> {
         order by a.createdAt desc
     """)
     List<Audit> findByFilters(@Param("action") Action action,
-                              @Param("fromTs") Instant fromTs,
-                              @Param("toTs") Instant toTs);
+                              @Param("fromTs") LocalDateTime fromTs,
+                              @Param("toTs") LocalDateTime toTs);
 }
 
 
