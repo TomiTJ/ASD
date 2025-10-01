@@ -17,6 +17,17 @@ INSERT INTO users (full_name, email, password, role, status, created_at, updated
 
 INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
     ('Viewer User', 'viewer@bank.local', 'viewer123', 'READ_ONLY', 'ACTIVE', datetime('now'), datetime('now'));
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
+    ('Lesandu Perera', 'lesandu@gmail.com', 'lesandu123', 'ADMIN', 'ACTIVE', strftime('%s','now'), strftime('%s','now'));
+
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
+    ('Calvin Kishore', 'calvin@gmail.com', 'calvin123', 'READ_ONLY', 'ACTIVE', strftime('%s','now'), strftime('%s','now'));
+
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
+    ('Claire Chand', 'claire@gmail.com', 'claire123', 'READ_ONLY', 'ACTIVE', strftime('%s','now'), strftime('%s','now'));
+
+INSERT INTO users (full_name, email, password, role, status, created_at, updated_at) VALUES
+    ('Gautum Subhash', 'gautum@gmail.com', 'gautum123', 'READ_ONLY', 'ACTIVE', strftime('%s','now'), strftime('%s','now'));
 
 
 DROP TABLE IF EXISTS transactions;
