@@ -10,13 +10,16 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - task: Maven@3
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '23'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  - task: Maven@4
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.11'
-      jdkArchitectureOption: 'x64'
+      goals: 'clean test'
+      options: '-B -V'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'package'
