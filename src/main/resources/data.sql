@@ -5,26 +5,29 @@ DROP TABLE IF EXISTS audit_event;
 DROP TABLE IF EXISTS users;
 
 -- Users table
+
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
-                       full_name VARCHAR(80) NOT NULL,
-                       email VARCHAR(120) NOT NULL UNIQUE,
-                       password VARCHAR(255) NOT NULL,
-                       role VARCHAR(20) NOT NULL,        -- 'ADMIN' or 'READ_ONLY'
-                       status VARCHAR(20) NOT NULL,      -- 'ACTIVE' or 'DEACTIVATED'
+                       full_name TEXT NOT NULL,
+                       email TEXT NOT NULL UNIQUE,
+                       password TEXT NOT NULL,
+                       role TEXT NOT NULL,       -- 'ADMIN' or 'READ_ONLY'
+                       status TEXT NOT NULL,     -- 'ACTIVE' or 'DEACTIVATED'
                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seed users
+-- Seed known-good users with BCrypt hashed passwords
 INSERT INTO users (full_name, email, password, role, status)
 VALUES
-    ('Admin User', 'admin@bank.local', 'admin123', 'ADMIN', 'ACTIVE'),
-    ('Viewer User', 'viewer@bank.local', 'viewer123', 'READ_ONLY', 'ACTIVE'),
-    ('Lesandu Perera', 'lesandu@gmail.com', 'lesandu123', 'ADMIN', 'ACTIVE'),
-    ('Calvin Kishore', 'calvin@gmail.com', 'calvin123', 'READ_ONLY', 'ACTIVE'),
-    ('Claire Chand', 'claire@gmail.com', 'claire123', 'READ_ONLY', 'ACTIVE'),
-    ('Gautum Subhash', 'gautum@gmail.com', 'gautum123', 'READ_ONLY', 'ACTIVE');
+    ('Admin User', 'admin@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'ADMIN', 'ACTIVE'),
+
+    ('Viewer User', 'viewer@bank.local',
+     '$2a$10$677L7hf55cMtzXGAuYJC0eEirNc1uJyXWstQ9U1NdTCHm9wOAZf9W',
+     'READ_ONLY', 'ACTIVE');
+
 
 -- Customers table
 CREATE TABLE customers (

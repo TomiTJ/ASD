@@ -3,6 +3,7 @@ package com.asd.controller;
 import com.asd.model.User;
 import com.asd.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserRepository users;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository users) {
+    public AuthController(UserRepository users, PasswordEncoder passwordEncoder) {
         this.users = users;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // POST /login: verify against DB and create a session
@@ -24,15 +27,14 @@ public class AuthController {
         var user = users.findByEmailIgnoreCase(email).orElse(null);
         if (user == null) return "redirect:/login?error=notfound";
 
-
         if (user.getStatus() == User.Status.DEACTIVATED) {
             return "redirect:/login?error=inactive";
         }
 
-        if (!user.getPassword().equals(password)) {
+        // 🔑 Use passwordEncoder to check hashed password
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             return "redirect:/login?error=badcreds";
         }
-
 
         session.setAttribute("userId", user.getId());
         session.setAttribute("userName", user.getFullName());
@@ -47,3 +49,4 @@ public class AuthController {
         return "redirect:/login?logout";
     }
 }
+
