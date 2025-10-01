@@ -5,22 +5,28 @@
     <title>Users</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; }
-        table { border-collapse: collapse; width: 100%; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
         th, td { border: 1px solid #ddd; padding: 8px; }
         th { background:#f5f5f5; text-align:left; }
-        a.button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; }
-        form.inline { display:inline; margin:0; }
+        a.button, button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; background:#fafafa; cursor:pointer; }
+        button:disabled { background:#eee; color:#999; cursor:not-allowed; }
+        .top { display:flex; justify-content:space-between; align-items:center; }
+        .msg { padding:10px; margin:10px 0; border-radius:6px; background:#e8f5e9; border:1px solid #4caf50; color:#2e7d32; }
+        tr.highlight { background:#fff8dc; }
     </style>
 </head>
 <body>
 
 <!-- Navbar Fragment -->
-<div th:replace="fragments/navbar :: navbar"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="top">
     <h2>Users</h2>
     <a class="button" href="/users/create">+ Create user</a>
 </div>
+
+<!-- Flash message -->
+<div th:if="${msg}" class="msg" th:text="${msg}"></div>
 
 <table>
     <thead>
@@ -30,26 +36,32 @@
         <th>Email</th>
         <th>Role</th>
         <th>Status</th>
-        <th></th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="u : ${users}">
-        <td th:text="${u.id}">1</td>
+    <tr th:each="u : ${users}"
+        th:classappend="${(u.id == currentUserId) ? 'highlight' : ''}">
+
+    <td th:text="${u.id}">1</td>
         <td th:text="${u.fullName}">Admin User</td>
         <td th:text="${u.email}">admin@bank.local</td>
         <td th:text="${u.role}">ADMIN</td>
         <td th:text="${u.status}">ACTIVE</td>
         <td>
-            <a th:href="@{/users/edit/{id}(id=${u.id})}">Edit</a>
+            <a class="button" th:href="@{/users/edit/{id}(id=${u.id})}">Edit</a>
             <form class="inline" th:action="@{/users/delete/{id}(id=${u.id})}" method="post"
-                  onsubmit="return confirm('Delete this user?');">
-                <button type="submit">Delete</button>
-            </form>
+                  onsubmit="return confirm('Delete this user?');" style="display:inline">
+                <button type="submit"
+                        th:disabled="${u.id == currentUserId}">
+                    Delete
+                </button>
 
+            </form>
         </td>
     </tr>
     </tbody>
 </table>
 </body>
 </html>
+
