@@ -8,8 +8,10 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+  container: 'openjdk:21-jdk'
 
 steps:
+
   - task: Maven@4
     inputs:
       mavenPomFile: 'pom.xml'
