@@ -5,18 +5,19 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  # Step 1 – Check out the code
-  - task: Checkout@1
+  # Step 1 – Checkout source code
+  - checkout: self
     displayName: 'Checkout source code'
 
-  # Step 2 – Set up JDK 21 (Temurin or Oracle, whichever you want)
-  - task: UseJavaVersion@1
+  # Step 2 – Set up JDK 21
+  - task: JavaToolInstaller@0
     inputs:
       versionSpec: '21'
-      distribution: 'temurin'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
     displayName: 'Set up Java 21'
 
-  # Step 3 – Cache Maven dependencies for faster builds
+  # Step 3 – Cache Maven dependencies
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
@@ -29,7 +30,7 @@ steps:
   - script: mvn clean install -B
     displayName: 'Build with Maven and run unit tests'
 
-  # Step 5 – Publish JUnit test results to Azure DevOps
+  # Step 5 – Publish JUnit test results
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
