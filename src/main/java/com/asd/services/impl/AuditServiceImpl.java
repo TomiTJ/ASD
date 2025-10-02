@@ -9,10 +9,7 @@ import com.asd.dto.AuditDto;
 import com.asd.repository.AuditRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,9 +25,9 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<AuditDto> list(Action action, LocalDate from, LocalDate to) {
-        LocalDateTime fromInstant = (from == null) ? null : LocalDateTime.from(from.atStartOfDay().toInstant(ZoneOffset.UTC));
-        LocalDateTime toInstant = (to == null) ? null : LocalDateTime.from(to.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).minusMillis(1));
-        List<Audit> audits = auditRepository.findByFilters(action, fromInstant, toInstant);
+        LocalDateTime fromTs = (from == null) ? null : from.atStartOfDay();
+        LocalDateTime toTs   = (to == null) ? null : to.atTime(LocalTime.MAX);;
+        List<Audit> audits = auditRepository.findByFilters(action, fromTs, toTs);
         return audits.stream().map(this::mapToAuditDto).collect(Collectors.toList());
     }
 

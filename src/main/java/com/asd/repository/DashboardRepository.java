@@ -1,6 +1,5 @@
 package com.asd.repository;
 
-import com.asd.dto.TransactionTrendDto;
 import com.asd.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

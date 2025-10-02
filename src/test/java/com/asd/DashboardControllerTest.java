@@ -5,8 +5,8 @@ import com.asd.dto.DashboardMetricDto;
 import com.asd.services.DashboardService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -19,7 +19,7 @@ class DashboardControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean   // ✅ replaces @MockBean
+    @MockitoBean
     private DashboardService dashboardService;
 
     @Test

@@ -1,7 +1,6 @@
 package com.asd.services.impl;
 
 import com.asd.dto.DashboardMetricDto;
-import com.asd.dto.TransactionTrendDto;
 import com.asd.repository.DashboardRepository;
 import com.asd.services.DashboardService;
 import org.springframework.stereotype.Service;
