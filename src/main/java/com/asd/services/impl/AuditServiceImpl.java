@@ -9,9 +9,7 @@ import com.asd.dto.AuditDto;
 import com.asd.repository.AuditRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuditServiceImpl implements AuditService {
 
-    private AuditRepository auditRepository;
+    private final AuditRepository auditRepository;
 
     public AuditServiceImpl(AuditRepository auditRepository) {
         this.auditRepository = auditRepository;
@@ -27,9 +25,9 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<AuditDto> list(Action action, LocalDate from, LocalDate to) {
-        Instant fromInstant = (from == null) ? null : from.atStartOfDay().toInstant(ZoneOffset.UTC);
-        Instant toInstant = (to == null) ? null : to.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).minusMillis(1);
-        List<Audit> audits = auditRepository.findByFilters(action, fromInstant, toInstant);
+        LocalDateTime fromTs = (from == null) ? null : from.atStartOfDay();
+        LocalDateTime toTs   = (to == null) ? null : to.atTime(LocalTime.MAX);;
+        List<Audit> audits = auditRepository.findByFilters(action, fromTs, toTs);
         return audits.stream().map(this::mapToAuditDto).collect(Collectors.toList());
     }
 
@@ -47,16 +45,15 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private AuditDto mapToAuditDto(Audit audit) {
-        AuditDto auditDto = AuditDto.builder()
-                .auditEventId(audit.getAuditEventId())
-                .actorUserId(audit.getActorUserId())
-                .action(audit.getAction())
-                .resourceType(audit.getResourceType())
-                .resourceId(audit.getResourceId())
-                .requestId(audit.getRequestId())
-                .createdAt(audit.getCreatedAt())
-                .build();
-        return auditDto;
+      return AuditDto.builder()
+              .auditEventId(audit.getAuditEventId())
+              .actorUserId(audit.getActorUserId())
+              .action(audit.getAction())
+              .resourceType(audit.getResourceType())
+              .resourceId(audit.getResourceId())
+              .requestId(audit.getRequestId())
+              .createdAt(audit.getCreatedAt())
+              .build();
     }
 
 }

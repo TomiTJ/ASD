@@ -1,6 +1,8 @@
 package com.asd.model;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.Instant;
@@ -52,7 +54,7 @@ public class Audit {
 
     @org.springframework.data.annotation.CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
 
 
