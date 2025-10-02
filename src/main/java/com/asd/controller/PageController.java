@@ -10,13 +10,7 @@ public class PageController {
     @GetMapping("/login")
     public String login() { return "forward:/login.html"; }
 
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session) {
-        if (session.getAttribute("userId") == null) {
-            return "redirect:/login";
-        }
-        return "forward:/dashboard.html";
-    }
+
 
     @GetMapping("/")
     public String root() { return "redirect:/login"; }
