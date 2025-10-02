@@ -52,7 +52,7 @@ class AuthControllerTests {
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("email", "viewer@bank.local")
+                        .param("email", "viewer1@bank.local")
                         .param("password", "wrongpw"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/login?error=*"));
