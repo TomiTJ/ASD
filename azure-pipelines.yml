@@ -30,6 +30,8 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
 
+
+# added test db on pipeline to run tests ( uses application-test.properties)
 services:
   postgres:
     image: postgres:14
