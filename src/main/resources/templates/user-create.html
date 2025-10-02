@@ -1,44 +1,72 @@
+
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Create User</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; }
-        label { display:block; margin-top:1rem; }
-        input, select { width:100%; padding:8px; margin-top:4px; }
-        button { margin-top:1rem; padding:8px 12px; border:1px solid #333; border-radius:6px; cursor:pointer; }
+        .content-header { display:flex; justify-content:space-between; align-items:center; }
+        .card { max-width: 640px; background:#fff; border:1px solid #eee; border-radius:10px; padding:18px; }
+        label { display:block; margin-top:1rem; font-weight:600; }
+        input, select { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:8px; }
+        .actions { margin-top:1rem; display:flex; gap:10px; }
+        .btn { padding:8px 12px; border:1px solid #333; border-radius:6px; background:#fafafa; cursor:pointer; text-decoration:none; }
     </style>
 </head>
 <body>
-<div th:replace="fragments/navbar :: navbar"></div>
+<div class="main-layout">
+    <div class="top-bar">
+        <div class="name-card">
+            <div th:text="${userName}"></div>
+            <div class="position" th:text="${userRole}"></div>
+        </div>
+        <div class="img-placeholder"></div>
+    </div>
 
-<h2>Create New User</h2>
+    <div th:replace="fragments/navbar2 :: navbar2"></div>
 
-<form th:action="@{/users/create}" th:object="${user}" method="post">
-    <label>Full Name</label>
-    <input type="text" th:field="*{fullName}" required>
+    <div class="main-content-container">
+        <div class="content-header">
+            <h2>Create User</h2>
+            <a class="btn" th:href="@{/users}">← Back to Users</a>
+        </div>
 
-    <label>Email</label>
-    <input type="email" th:field="*{email}" required>
+        <div class="card">
+            <form th:action="@{/users/create}" th:object="${user}" method="post">
+                <label>Full Name</label>
+                <input type="text" th:field="*{fullName}" required>
 
-    <label>Password</label>
-    <input type="password" th:field="*{password}" required>
+                <label>Email</label>
+                <input type="email" th:field="*{email}" required>
 
-    <label>Role</label>
-    <select th:field="*{role}">
-        <option th:value="ADMIN">ADMIN</option>
-        <option th:value="READ_ONLY">READ_ONLY</option>
-    </select>
+                <label>Password</label>
+                <input type="password" th:field="*{password}" required>
 
-    <label>Status</label>
-    <select th:field="*{status}">
-        <option th:value="ACTIVE">ACTIVE</option>
-        <option th:value="DEACTIVATED">DEACTIVATED</option>
-    </select>
+                <label>Role</label>
+                <select th:field="*{role}">
+                    <option th:value="ADMIN">ADMIN</option>
+                    <option th:value="READ_ONLY">READ_ONLY</option>
+                </select>
 
-    <button type="submit">Create</button>
-</form>
+                <label>Status</label>
+                <select th:field="*{status}">
+                    <option th:value="ACTIVE">ACTIVE</option>
+                    <option th:value="DEACTIVATED">DEACTIVATED</option>
+                </select>
 
+                <div class="actions">
+                    <button class="btn" type="submit">Create</button>
+                    <a class="btn" th:href="@{/users}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer"></div>
+</div>
 </body>
 </html>
+
+
+

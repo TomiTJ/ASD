@@ -3,22 +3,19 @@
 <head>
     <meta charset="utf-8">
     <title>Users</title>
-
     <link rel="stylesheet" th:href="@{css/main.css}">
     <style>
         table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
         th, td { border: 1px solid #ddd; padding: 8px; }
         th { background:#f5f5f5; text-align:left; }
-        a.button, button { display:inline-block; padding:6px 10px; border:1px solid #333; border-radius:6px; text-decoration:none; background:#fafafa; cursor:pointer; }
+        a.button, button { display:inline-block; padding:6px 12px; border:1px solid #333; border-radius:6px; text-decoration:none; background:#fafafa; cursor:pointer; }
         button:disabled { background:#eee; color:#999; cursor:not-allowed; }
-        .top { display:flex; justify-content:space-between; align-items:center; }
+        .header-row { display:flex; justify-content:space-between; align-items:center; }
         .msg { padding:10px; margin:10px 0; border-radius:6px; background:#e8f5e9; border:1px solid #4caf50; color:#2e7d32; }
         tr.highlight { background:#fff8dc; }
     </style>
 </head>
 <body>
-
-<!-- Navbar Fragment -->
 <div class="main-layout">
     <div class="top-bar">
         <div class="name-card">
@@ -29,50 +26,47 @@
     </div>
     <div th:replace="fragments/navbar2 :: navbar2"></div>
     <div class="main-content-container">
-        <div>
-            <!-- Flash message -->
-            <div th:if="${msg}" class="msg" th:text="${msg}"></div>
+        <!-- Flash message -->
+        <div th:if="${msg}" class="msg" th:text="${msg}"></div>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Full name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="u : ${users}"
-                    th:classappend="${(u.id == currentUserId) ? 'highlight' : ''}">
-
-                    <td th:text="${u.id}">1</td>
-                    <td th:text="${u.fullName}">Admin User</td>
-                    <td th:text="${u.email}">admin@bank.local</td>
-                    <td th:text="${u.role}">ADMIN</td>
-                    <td th:text="${u.status}">ACTIVE</td>
-                    <td>
-                        <a class="button" th:href="@{/users/edit/{id}(id=${u.id})}">Edit</a>
-                        <form class="inline" th:action="@{/users/delete/{id}(id=${u.id})}" method="post"
-                              onsubmit="return confirm('Delete this user?');" style="display:inline">
-                            <button type="submit"
-                                    th:disabled="${u.id == currentUserId}">
-                                Delete
-                            </button>
-
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="header-row">
+            <h2>Users</h2>
+            <a class="button" th:href="@{/users/create}">+ Create User</a>
         </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}"
+                th:classappend="${(u.id == currentUserId) ? 'highlight' : ''}">
+                <td th:text="${u.id}"></td>
+                <td th:text="${u.fullName}"></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.role}"></td>
+                <td th:text="${u.status}"></td>
+                <td>
+                    <a class="button" th:href="@{/users/edit/{id}(id=${u.id})}">Edit</a>
+                    <form th:action="@{/users/delete/{id}(id=${u.id})}" method="post" style="display:inline"
+                          onsubmit="return confirm('Delete this user?');">
+                        <button type="submit" th:disabled="${u.id == currentUserId}">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
     <div class="footer"></div>
 </div>
-
-
 </body>
 </html>
+
 

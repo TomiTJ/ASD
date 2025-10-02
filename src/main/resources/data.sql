@@ -5,14 +5,13 @@ DROP TABLE IF EXISTS audit_event;
 DROP TABLE IF EXISTS users;
 
 -- Users table
-
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
-                       full_name TEXT NOT NULL,
-                       email TEXT NOT NULL UNIQUE,
-                       password TEXT NOT NULL,
-                       role TEXT NOT NULL,       -- 'ADMIN' or 'READ_ONLY'
-                       status TEXT NOT NULL,     -- 'ACTIVE' or 'DEACTIVATED'
+                       full_name VARCHAR(80) NOT NULL,
+                       email VARCHAR(120) NOT NULL UNIQUE,
+                       password VARCHAR(255) NOT NULL,
+                       role VARCHAR(20) NOT NULL,        -- 'ADMIN' or 'READ_ONLY'
+                       status VARCHAR(20) NOT NULL,      -- 'ACTIVE' or 'DEACTIVATED'
                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -20,6 +19,7 @@ CREATE TABLE users (
 -- Seed known-good users with BCrypt hashed passwords
 INSERT INTO users (full_name, email, password, role, status)
 VALUES
+
     ('Admin User', 'admin@bank.local',
      '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
      'ADMIN', 'ACTIVE'),
