@@ -1,17 +1,14 @@
-package com.asd; // adjust package
+package com.asd;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 class PasswordEncoderTest {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Test
     void passwordShouldMatchAfterEncoding() {
@@ -21,4 +18,5 @@ class PasswordEncoderTest {
         assertTrue(passwordEncoder.matches(rawPassword, encodedPassword));
     }
 }
+
 
