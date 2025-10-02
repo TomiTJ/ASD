@@ -15,11 +15,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // ❗ don't replace datasource
 class AuditServiceImplTest {
-
     @Autowired
     private AuditService auditService;
 
@@ -34,12 +32,10 @@ class AuditServiceImplTest {
 
         AuditDto dto = auditService.record(actorId, Action.CREATE, ResourceType.User, resourceId, requestId);
 
-        // check return value
         assertNotNull(dto.getAuditEventId());
         assertEquals(Action.CREATE, dto.getAction());
         assertEquals(ResourceType.User, dto.getResourceType());
 
-        // check it actually saved
         Audit saved = auditRepository.findById(dto.getAuditEventId()).orElseThrow();
         assertEquals(actorId, saved.getActorUserId());
         assertEquals(resourceId, saved.getResourceId());
