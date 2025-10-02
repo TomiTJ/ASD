@@ -12,14 +12,14 @@ import java.util.UUID;
 @Repository
 public interface DashboardRepository extends JpaRepository<Transaction, UUID> {
 
-    @Query("SELECT COUNT(u) FROM User u")
-    long countUsers();
+    @Query(value = "SELECT COUNT(*) FROM users", nativeQuery = true)
+    public Long countUsers();
 
-    @Query("SELECT COUNT(a) FROM Account a")
-    long countAccounts();
+    @Query(value = "SELECT COUNT(*) FROM customers", nativeQuery = true)
+    public long countAccounts();
 
-    @Query("SELECT COUNT(t) FROM Transaction t")
-    long countTransactions();
+    @Query(value = "SELECT COUNT(*) FROM transactions", nativeQuery = true)
+    public long countTransactions();
 
 
 }
