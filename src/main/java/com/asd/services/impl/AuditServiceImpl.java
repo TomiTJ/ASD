@@ -39,7 +39,7 @@ public class AuditServiceImpl implements AuditService {
         e.setResourceType(resourceType);
         e.setResourceId(resourceId);
         e.setRequestId(requestId);
-        // e.setCreatedAt(Instant.now()); // Let Spring Data auditing handle this
+        e.setCreatedAt(LocalDateTime.now()); // Let Spring Data auditing handle this
         auditRepository.save(e);
         return mapToAuditDto(e);
     }
