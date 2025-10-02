@@ -26,19 +26,19 @@ class AuthControllerTests {
 
     @BeforeEach
     void cleanDb() {
-        // ✅ clear users before each test
         userRepo.deleteAll();
     }
 
     @Test
     void login_withValidCredentials_redirectsToDashboard() throws Exception {
-        User user = new User("Test Admin", "testadmin@bank.local",
+        String email = "testadmin_" + System.currentTimeMillis() + "@bank.local";
+        User user = new User("Test Admin", email,
                 encoder.encode("password123"), User.Role.ADMIN);
         userRepo.save(user);
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("email", "testadmin@bank.local")
+                        .param("email", email)
                         .param("password", "password123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard"));
@@ -46,16 +46,18 @@ class AuthControllerTests {
 
     @Test
     void login_withInvalidPassword_redirectsWithError() throws Exception {
-        User user = new User("Viewer", "viewer1@bank.local",
+        String email = "viewer_" + System.currentTimeMillis() + "@bank.local";
+        User user = new User("Viewer", email,
                 encoder.encode("correctpw"), User.Role.READ_ONLY);
         userRepo.save(user);
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("email", "viewer1@bank.local")
+                        .param("email", email)
                         .param("password", "wrongpw"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/login?error=*"));
     }
 }
+
 
