@@ -1,0 +1,64 @@
+/* Shared styling for accounts list + edit form pages */
+
+:root {
+    --border:#ddd;
+    --border-dark:#333;
+    --bg-head:#f5f5f5;
+    --btn-bg:#fafafa;
+    --muted:#666;
+    --ok-bg:#e8f5e9;
+    --ok-border:#4caf50;
+    --ok-text:#2e7d32;
+    --warn:#b71c1c;
+}
+
+/* Layout helpers */
+.header-row {
+    display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.header-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.content-header { display:flex; justify-content:space-between; align-items:center; }
+
+/* Messages */
+.msg {
+    padding:10px; margin:10px 0; border-radius:6px;
+    background:var(--ok-bg); border:1px solid var(--ok-border); color:var(--ok-text);
+}
+
+/* Buttons */
+.btn {
+    display:inline-block; padding:8px 12px; border:1px solid var(--border-dark);
+    border-radius:6px; background:var(--btn-bg); cursor:pointer; text-decoration:none;
+}
+.btn.warn { border-color: var(--warn); color: var(--warn); }
+button.btn:disabled, .btn[disabled] {
+    background:#eee; color:#999; cursor:not-allowed; border-color:#bbb;
+}
+
+/* Tables */
+table.data-table { width:100%; border-collapse:collapse; margin-top:1rem; }
+.data-table th, .data-table td { border:1px solid var(--border); padding:8px; text-align:left; }
+.data-table th { background:var(--bg-head); }
+tr.highlight { background:#fff8dc; }
+.actions-cell .btn { margin-right:6px; }
+.inline-form { display:inline; }
+
+/* Filter form */
+.filter { display:flex; gap:8px; align-items:center; }
+.filter input {
+    padding:6px 8px; border:1px solid #ccc; border-radius:6px;
+}
+
+/* Card + form */
+.card { max-width: 720px; background:#fff; border:1px solid #eee; border-radius:10px; padding:18px; }
+label { display:block; margin-top:1rem; font-weight:600; }
+input, select { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:8px; }
+.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+.muted { color:var(--muted); font-size:12px; margin-top:4px; }
+.actions { margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; }
+
+/* Small responsive tweak */
+@media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .actions-cell .btn { margin-bottom:6px; }
+}
