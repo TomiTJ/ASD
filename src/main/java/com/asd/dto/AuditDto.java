@@ -2,6 +2,8 @@ package com.asd.dto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.Instant;
 import java.util.stream.Collector;
@@ -20,6 +22,6 @@ public class AuditDto {
     private ResourceType resourceType;
     private  UUID resourceId;
     private  UUID requestId;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
 }
