@@ -7,6 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,8 +31,8 @@ public class AuditController {
     @ResponseBody
     public ResponseEntity<List<AuditDto>> getAudits(
             @RequestParam(required = false) Action action,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
     ) {
         List<AuditDto> audits = auditService.list(action, from, to);
         return ResponseEntity.ok(audits);

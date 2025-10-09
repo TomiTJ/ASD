@@ -1,6 +1,8 @@
 package com.asd.dto;
 
 import lombok.*;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import com.asd.model.Action;
@@ -18,5 +20,5 @@ public class AuditDto {
     private ResourceType resourceType;
     private UUID resourceId;
     private UUID requestId;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }
