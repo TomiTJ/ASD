@@ -67,3 +67,12 @@ CREATE TABLE audit_event (
                              request_id UUID DEFAULT gen_random_uuid(),
                              created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO audit_event
+(audit_event_id, user_id, action, resource_type, resource_id, request_id, created_at)
+VALUES
+    (gen_random_uuid(), 1, 'LOGIN',   'USER',       gen_random_uuid(), gen_random_uuid(), NOW() - INTERVAL '15 minutes'),
+    (gen_random_uuid(), 1, 'CREATE',  'ACCOUNT',    gen_random_uuid(), gen_random_uuid(), NOW() - INTERVAL '10 minutes'),
+    (gen_random_uuid(), 2, 'UPDATE',  'CUSTOMER',   gen_random_uuid(), gen_random_uuid(), NOW() - INTERVAL '2 minutes');
