@@ -49,6 +49,8 @@ public class AuthController {
         session.setAttribute("userName", user.getFullName());
         session.setAttribute("userRole", user.getRole().name());
 
+
+        //DO NOT TOUCH AUDITSERVICES WITHOUT CONSULTING TOMI
         auditService.recordAction(user, Action.LOGIN, ResourceType.USER, UUID.randomUUID());
         return "redirect:/dashboard";
     }
