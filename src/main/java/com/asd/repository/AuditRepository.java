@@ -5,29 +5,20 @@ import com.asd.model.Audit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface AuditRepository extends JpaRepository<Audit, UUID> {
 
-    // Find by primary key field name on the entity
-    Optional<Audit> findByAuditEventId(UUID auditEventId);
-
-    // Optional: basic filtering used by the service/controller
     @Query("""
-        select a from Audit a
-        where (:action is null or a.action = :action)
-          and (:fromTs is null or a.createdAt >= :fromTs)
-          and (:toTs is null or a.createdAt <= :toTs)
-        order by a.createdAt desc
-    """)
+SELECT a FROM Audit a
+WHERE (:action IS NULL OR a.action = :action)
+  AND (:fromTs IS NULL OR a.createdAt >= CAST(:fromTs AS timestamp))
+  AND (:toTs IS NULL OR a.createdAt <= CAST(:toTs AS timestamp))
+ORDER BY a.createdAt DESC
+""")
     List<Audit> findByFilters(@Param("action") Action action,
                               @Param("fromTs") LocalDateTime fromTs,
                               @Param("toTs") LocalDateTime toTs);
 }
-
-

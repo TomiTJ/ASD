@@ -4,14 +4,10 @@ import com.asd.dto.AuditDto;
 import com.asd.model.Action;
 import com.asd.services.AuditService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -24,22 +20,19 @@ public class AuditController {
         this.auditService = auditService;
     }
 
-
     @GetMapping("/audit")
-    public String page(Model model) {
-        List<AuditDto> recent = auditService.findAllAudits();
-        model.addAttribute("audits", recent);
-        return "audit";
+    public String viewAuditPage() {
+        return "audit"; // Loads audit.html
     }
-
 
     @GetMapping("/api/audits")
     @ResponseBody
-    public List<AuditDto> list(
+    public ResponseEntity<List<AuditDto>> getAudits(
             @RequestParam(required = false) Action action,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
     ) {
-        return auditService.list(action, from, to);
+        List<AuditDto> audits = auditService.list(action, from, to);
+        return ResponseEntity.ok(audits);
     }
 }
