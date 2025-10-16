@@ -1,46 +1,59 @@
 package com.asd.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-
-enum accountStatus {
-    TRANSACTIONAL,
-    SAVINGS,
-    CREDIT,
-    BUSINESS
-}
-
-enum accountType {
-    OPEN,
-    CLOSED,
-    FROZEN
-}
 
 @Data
 @Entity
-@Table(name="account")
+@Table(name = "account")
 public class Account {
 
-    @Id
-    private Long id;
-    private int accountNumber;
-    private int userId;
-    private accountStatus accountStatus;
-    private accountType accountType;
-    private double balance;
-
-    public Account (int accountNumber, int userID, accountStatus accountStatus, accountType accountType, double balance) {
-        this.accountNumber = accountNumber;
-        this.userId = userID;
-        this.accountStatus = accountStatus;
-        this.accountType = accountType;
-        this.balance = balance;
+    /** WHAT the account is (product/type): e.g., SAVINGS, CREDIT, BUSINESS, TRANSACTIONAL */
+    public enum AccountType {
+        TRANSACTIONAL,
+        SAVINGS,
+        CREDIT,
+        BUSINESS
     }
 
+    /** Lifecycle/status: e.g., OPEN, FROZEN, CLOSED */
+    public enum AccountStatus {
+        OPEN,
+        FROZEN,
+        CLOSED
+    }
 
-    public Account() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    /** Human/accounting number; keep int if that’s how your DB is defined */
+    @Column(nullable = false, unique = true)
+    private int accountNumber;
+
+    /** Foreign key to users.id (simple scalar; or change to @ManyToOne<User> if you want) */
+    @Column(nullable = false)
+    private int userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AccountType accountType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AccountStatus accountStatus;
+
+    @Column(nullable = false)
+    private double balance;
+
+    public Account() {}
+
+    public Account(int accountNumber, int userId,
+                   AccountType accountType, AccountStatus accountStatus, double balance) {
+        this.accountNumber = accountNumber;
+        this.userId = userId;
+        this.accountType = accountType;
+        this.accountStatus = accountStatus;
+        this.balance = balance;
     }
 }
