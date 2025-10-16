@@ -1,0 +1,16 @@
+## Login User
+
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"email": "admin@bank.local",
+"password": "admin123"
+}
+
+> {% client.global.set("auth-token", response.body.access_token); %}
+
+###
+GET http://localhost:8080/api/audits
+Authorization: Bearer
+

@@ -1,7 +1,10 @@
 package com.asd.controller;
 
+import com.asd.services.AuditService;
 
 import com.asd.dto.TransactionDto;
+import com.asd.model.Action;
+import com.asd.model.ResourceType;
 import com.asd.model.Transaction;
 import com.asd.model.User;
 import com.asd.repository.TransactionRepository;
@@ -23,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.*;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class TransactionController {
@@ -75,6 +79,7 @@ public class TransactionController {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(outputStream), CSVFormat.DEFAULT);
+
         csvPrinter.printRecord("Transaction ID", "Customer", "Type", "Amount", "Status", "Time Created", "Date Created");
 
         for (TransactionDto transaction : transactions) {

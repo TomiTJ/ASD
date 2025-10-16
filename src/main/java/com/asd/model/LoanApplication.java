@@ -8,7 +8,60 @@ import java.time.LocalDate;
 @Table(name = "loan_application")
 public class LoanApplication {
 
-    public enum Status { SUBMITTED, APPROVED, REJECTED } // kept inside to reduce files
+    public enum Status { SUBMITTED, APPROVED, REJECTED, FEE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } // kept inside to reduce files
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
