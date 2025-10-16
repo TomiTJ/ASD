@@ -2,42 +2,119 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bank Admin — Login</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 400px; margin: 3rem auto; }
-        h2 { margin-bottom: 1rem; }
-        label { font-weight: bold; }
-        input { width: 100%; padding: 8px; margin-top: 4px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 8px 12px; border: 1px solid #333; border-radius: 6px; background: #f5f5f5; cursor: pointer; }
-        #msg { margin-top: 1rem; color: red; }
-    </style>
-
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
-<h2>Bank Admin — Login</h2>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="brand-side">
+            <div class="brand-content">
+                <div class="logo-container">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M20.93 5.61995L20.4 4.04995C19.9748 2.8473 18.8356 2.04503 17.56 2.04995H6.44001C5.16442 2.04503 4.0252 2.8473 3.60001 4.04995L3.07001 5.61995C2.39452 6.15452 2.00041 6.96852 2.00001 7.82995V8.49995C1.9963 9.87438 2.80416 11.1215 4.06001 11.6799C4.02005 11.7819 3.9997 11.8905 4.00001 11.9999V18.9999C4.00001 20.6568 5.34316 21.9999 7.00001 21.9999H17C18.6569 21.9999 20 20.6568 20 18.9999V11.9999C20.0003 11.8905 19.98 11.7819 19.94 11.6799C21.1959 11.1215 22.0037 9.87438 22 8.49995V7.82995C21.9996 6.96852 21.6055 6.15452 20.93 5.61995ZM5.49001 4.67995C5.63301 4.25458 6.04186 3.97656 6.49001 3.99995H17.56C18.0082 3.97656 18.417 4.25458 18.56 4.67995L18.66 4.99995H5.39001L5.49001 4.67995ZM14 8.49995V6.99995H10V8.49995C10 9.32838 10.6716 9.99995 11.5 9.99995H12.5C13.3284 9.99995 14 9.32838 14 8.49995ZM4.00001 8.49995V7.82995C4.00001 7.37155 4.37162 6.99995 4.83001 6.99995H8.00001V8.49995C8.00001 9.32838 7.32844 9.99995 6.50001 9.99995H5.50001C4.67159 9.99995 4.00001 9.32838 4.00001 8.49995ZM11 16.9999V19.9999H13V16.9999C13 16.4477 12.5523 15.9999 12 15.9999C11.4477 15.9999 11 16.4477 11 16.9999ZM18 19C18 19.5522 17.5523 20 17 20H15V16.9999C15 15.3431 13.6569 13.9999 12 13.9999C10.3432 13.9999 9.00001 15.3431 9.00001 16.9999V20H7.00001C6.44773 20 6.00001 19.5522 6.00001 19V12H6.50001C7.44344 12.0044 8.34729 11.6212 9.00001 10.9399C9.65273 11.6212 10.5566 12.0044 11.5 12H12.5C13.4434 12.0044 14.3473 11.6212 15 10.9399C15.6527 11.6212 16.5566 12.0044 17.5 12H18V19ZM18.5 9.99995C19.3284 9.99995 20 9.32838 20 8.49995V7.82995C20 7.37155 19.6284 6.99995 19.17 6.99995H16V8.49995C16 9.32838 16.6716 9.99995 17.5 9.99995H18.5Z" fill="#231F20"/>
+                    </svg>
+                </div>
+                <h1>Bank Admin</h1>
+                <p>Secure access to your banking administration platform. Manage accounts, transactions, and more.</p>
+            </div>
+            <div class="decoration-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
 
-<form method="post" action="/login">
-    <label>Email</label><br>
-    <input type="text" name="email" required autocomplete="username"><br>
+        <!-- Right Side - Login Form -->
+        <div class="form-side">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Please sign in to continue to your dashboard</p>
+                </div>
 
-    <label>Password</label><br>
-    <input type="password" name="password" required autocomplete="current-password"><br>
+                <div id="alert" class="alert"></div>
 
-    <button type="submit">Sign in</button>
-</form>
+                <form method="post" action="/login" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email"
+                                required 
+                                autocomplete="username"
+                                autofocus>
+                        </div>
+                    </div>
 
-<p id="msg"></p>
-<script>
-    const p = new URLSearchParams(location.search);
-    const map = {
-        badcreds: 'Invalid email or password.',
-        notfound: 'User not found.',
-        inactive: 'Account is deactivated.',
-    };
-    if (p.has('logout')) document.getElementById('msg').textContent = 'Logged out.';
-    if (p.get('error')) document.getElementById('msg').textContent = map[p.get('error')] || 'Login error.';
-</script>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                required 
+                                autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const alertBox = document.getElementById('alert');
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const errorMessages = {
+            badcreds: 'Invalid email or password. Please try again.',
+            notfound: 'User not found. Please check your email address.',
+            inactive: 'Your account has been deactivated. Please contact support.',
+        };
+
+        function showAlert(message, type = 'error') {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type} show`;
+            setTimeout(() => alertBox.classList.remove('show'), 5000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('logout')) {
+            showAlert('You have been successfully logged out.', 'info');
+        }
+        
+        if (urlParams.get('error')) {
+            const errorType = urlParams.get('error');
+            const message = errorMessages[errorType] || 'An error occurred during login. Please try again.';
+            showAlert(message, 'error');
+        }
+
+        loginForm.addEventListener('submit', function() {
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Signing in...';
+        });
+
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
 </body>
 </html>
-
-
