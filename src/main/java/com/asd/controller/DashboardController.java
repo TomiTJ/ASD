@@ -19,4 +19,9 @@ public class DashboardController {
     public DashboardMetricDto metrics() {
         return service.getMetrics();
     }
+
+    @GetMapping("/auditmetrics")
+    public DashboardMetricDto auditmetrics() {
+        return service.getAuditMetrics();
+    }
 }
