@@ -42,9 +42,11 @@ public class ReportController {
     @GetMapping("/reports/download")
     public ResponseEntity<byte[]> downloadReport(
             @RequestParam String type,
-            @RequestParam String format) throws IOException {
+            @RequestParam String format,
+            @RequestParam String start,
+            @RequestParam String end) throws IOException {
 
-        byte[] file = reportService.generateReport(type, format);
+        byte[] file = reportService.generateReportFiltered(type, format, start, end);
 
         String filename = type + "_report." + switch (format.toLowerCase()) {
             case "excel" -> "xlsx";
