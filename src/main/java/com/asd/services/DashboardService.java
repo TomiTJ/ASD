@@ -7,5 +7,4 @@ public interface DashboardService {
 
     DashboardMetricDto getMetrics();
 
-    DashboardMetricDto getAuditMetrics();
 }

@@ -15,7 +15,5 @@ public class DashboardMetricDto {
    private long totalAccounts;
    private long totalTransactions;
 
-   private long totalActions;
-
 }
 
