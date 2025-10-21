@@ -24,12 +24,12 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public void recordAction(User actor, Action action, ResourceType resourceType, UUID resourceId) {
         Audit e = new Audit();
-        e.setUser(actor);                 // FK -> users.id
+        e.setUser(actor);
         e.setAction(action);
-        e.setResourceType(resourceType);  // ✅ pass enum, not String
+        e.setResourceType(resourceType);
         e.setResourceId(resourceId != null ? resourceId : UUID.randomUUID());
         e.setRequestId(UUID.randomUUID());
-        e.setCreatedAt(Instant.now());    // ✅ make sure Audit.createdAt is Instant
+        e.setCreatedAt(Instant.now());
         repo.save(e);
     }
 
