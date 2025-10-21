@@ -1,8 +1,8 @@
 -- Drop old tables if they exist
 DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS customers CASCADE;
 DROP TABLE IF EXISTS audit_event;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS users CASCADE;
 
 -- Users table
 CREATE TABLE users (
@@ -31,14 +31,22 @@ VALUES
 
 -- Customers table
 CREATE TABLE customers (
-                           id SERIAL PRIMARY KEY,
-                           name VARCHAR(80) NOT NULL,
-                           email VARCHAR(120)
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(80) NOT NULL,
+    email VARCHAR(120)
 );
 
-INSERT INTO customers (name, email) VALUES
-                                        ('John', 'john@example.com'),
-                                        ('Bob', 'bob@email.com');
+INSERT INTO customers (full_name, email) VALUES
+                                                ('John Smith', 'john.smith@example.com'),
+                                                ('Bob Williams', 'bob.williams@example.com'),
+                                                ('Ava Patel', 'ava.patel@example.com'),
+                                                ('Liam Nguyen', 'liam.nguyen@example.com'),
+                                                ('Mia Chen', 'mia.chen@example.com'),
+                                                ('Noah Johnson', 'noah.johnson@example.com'),
+                                                ('Isla Thompson', 'isla.thompson@example.com'),
+                                                ('Ethan Brown', 'ethan.brown@example.com'),
+                                                ('Zoe Martin', 'zoe.martin@example.com'),
+                                                ('Lucas Garcia', 'lucas.garcia@example.com');
 
 -- Transactions table
 CREATE TABLE transactions (
@@ -57,7 +65,46 @@ INSERT INTO transactions (customer_id, type, amount, status, created_at) VALUES
     (1, 'DEPOSIT',25.88, 'PENDING', '2025-03-23 08:30:00+10'),
     (1, 'DEPOSIT',765.21, 'PENDING', '2025-02-04 12:30:00+10'),
     (2, 'DEPOSIT',2300.32, 'PENDING', '2025-07-13 17:20:10+10'),
-    (2, 'DEPOSIT',30.54, 'PENDING', '2025-09-22 11:50:20+10');
+    (2, 'DEPOSIT',30.54, 'PENDING', '2025-09-22 11:50:20+10'),
+--Customer 3: Ava Patel
+    (3, 'DEPOSIT', 450.00, 'COMPLETED', '2025-01-11 13:00:00+10'),
+    (3, 'TRANSFER', 200.00, 'FAILED', '2025-03-01 16:45:00+10'),
+    (3, 'WITHDRAWAL', 78.50, 'COMPLETED', '2025-03-21 09:10:00+10'),
+
+-- Customer 4: Liam Nguyen
+    (4, 'DEPOSIT', 980.25, 'COMPLETED', '2025-02-09 10:15:00+10'),
+    (4, 'WITHDRAWAL', 150.00, 'PENDING', '2025-04-25 12:20:00+10'),
+    (4, 'TRANSFER', 300.00, 'COMPLETED', '2025-06-13 18:10:00+10'),
+
+-- Customer 5: Mia Chen
+    (5, 'DEPOSIT', 1250.00, 'COMPLETED', '2025-01-20 09:40:00+10'),
+    (5, 'WITHDRAWAL', 210.75, 'PENDING', '2025-02-15 14:25:00+10'),
+    (5, 'TRANSFER', 150.50, 'COMPLETED', '2025-04-10 16:45:00+10'),
+
+-- Customer 6: Noah Johnson
+    (6, 'DEPOSIT', 760.00, 'COMPLETED', '2025-03-11 13:20:00+10'),
+    (6, 'WITHDRAWAL', 50.00, 'COMPLETED', '2025-05-05 08:10:00+10'),
+    (6, 'TRANSFER', 500.00, 'FAILED', '2025-05-20 10:30:00+10'),
+
+-- Customer 7: Isla Thompson
+    (7, 'DEPOSIT', 1200.00, 'COMPLETED', '2025-01-15 09:05:00+10'),
+    (7, 'WITHDRAWAL', 80.00, 'PENDING', '2025-02-10 10:45:00+10'),
+    (7, 'WITHDRAWAL', 350.00, 'COMPLETED', '2025-03-01 12:00:00+10'),
+
+-- Customer 8: Ethan Brown
+    (8, 'DEPOSIT', 320.00, 'COMPLETED', '2025-03-19 15:10:00+10'),
+    (8, 'TRANSFER', 100.00, 'FAILED', '2025-04-10 09:40:00+10'),
+    (8, 'WITHDRAWAL', 40.00, 'COMPLETED', '2025-04-22 13:20:00+10'),
+
+-- Customer 9: Zoe Martin
+    (9, 'DEPOSIT', 2000.00, 'COMPLETED', '2025-02-01 10:10:00+10'),
+    (9, 'WITHDRAWAL', 300.00, 'COMPLETED', '2025-02-12 11:30:00+10'),
+    (9, 'TRANSFER', 500.00, 'PENDING', '2025-03-05 14:15:00+10'),
+
+-- Customer 10: Lucas Garcia
+    (10, 'DEPOSIT', 450.00, 'COMPLETED', '2025-01-25 09:00:00+10'),
+    (10, 'TRANSFER', 150.00, 'COMPLETED', '2025-02-18 16:20:00+10'),
+    (10, 'WITHDRAWAL', 85.00, 'FAILED', '2025-03-10 08:45:00+10');
 
 -- Audit events table
 CREATE TABLE audit_event (

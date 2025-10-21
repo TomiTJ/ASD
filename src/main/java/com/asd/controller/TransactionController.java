@@ -79,7 +79,7 @@ public class TransactionController {
 
         for (TransactionDto transaction : transactions) {
                     csvPrinter.printRecord(transaction.getId(),
-                    transaction.getCustomer().getName(),
+                    transaction.getCustomer().getFull_name(),
                     transaction.getType(), transaction.getAmount(),
                     transaction.getStatus(), transaction.getTimeCreatedAt(),
                     transaction.getDateCreatedAt());
