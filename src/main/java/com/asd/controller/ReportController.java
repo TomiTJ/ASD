@@ -32,10 +32,10 @@ public class ReportController {
 
     @GetMapping("/reports")
     public String showTransactions(HttpSession session, Model model) {
-        /***Object userId = session.getAttribute("userId");
+        Object userId = session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
-        } ***/
+        }
         return "reports";
     }
 

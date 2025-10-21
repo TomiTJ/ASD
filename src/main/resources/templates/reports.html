@@ -1,52 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-  <link rel="stylesheet" th:href="@{css/main.css}">
-    <title>Reports</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/reports-layout.css}">
+  <title>Reports</title>
 </head>
 <body>
-
-  <div class="main-layout">
-    <div class="top-bar">
-      <div class="name-card">
-        <div th:text="${userName}"></div>
-        <div class="position" th:text="${userRole}"></div>
-      </div>
-      <div class="img-placeholder"></div>
+<div class="main-layout">
+  <div class="top-bar">
+    <div class="name-card">
+      <div th:text="${userName}">John Doe</div>
+      <div class="position" th:text="${userRole}">Admin</div>
     </div>
-      <div th:replace="fragments/navbar2 :: navbar2"></div>
-      <div class="main-content-container">
-        <form action="/reports/download" method="get">
-          <label>Report Type:</label>
-          <select name="type">
-            <option value="transaction">Transaction</option>
-            <option value="finance">Finance</option>
-            <option value="account">Account</option>
-          </select>
+    <div class="img-placeholder"></div>
+  </div>
+
+  <!-- Navbar Fragment -->
+  <div th:replace="fragments/navbar2 :: navbar2"></div>
+
+  <div class="main-content-container">
+    <h2>Reporting & Analytics</h2>
+
+    <div>
+      <h4>Generate a new Report</h4>
+      <form th:action="@{/reports/download}" method="get">
+        <div class="btn-container">
+
+          <div>
+            <label>Report Type:</label>
+            <select name="type">
+              <option value="transaction">Transaction</option>
+              <option value="account">Account (WIP)</option>
+            </select>
+          </div>
 
           <div class="date-range">
             <div>
-              <label for="start">Start Date</label>
-              <input type="date" id="start" name="start">
+              <div><label for="start">Start Date</label></div>
+              <div><input type="date" id="start" name="start"></div>
             </div>
             <div>
-              <label for="end">End Date</label>
-              <input type="date" id="end" name="end">
+              <div><label for="end">End Date</label></div>
+              <div><input type="date" id="end" name="end"></div>
             </div>
           </div>
 
-          <label>Format:</label>
-          <select name="format">
-            <option value="csv">CSV</option>
-            <option value="excel">Excel</option>
-            <option value="pdf">PDF</option>
-          </select>
+          <div>
+            <label>Format:</label>
+            <select name="format">
+              <option value="csv">CSV</option>
+              <option value="excel">Excel</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
 
-          <button type="submit">Download Report</button>
-        </form>
-      <div>
-      <div class="footer"></div></div>
+          <div>
+            <button type="submit">Download Report</button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+
+  <div class="footer"></div>
+</div>
 </body>
 </html>

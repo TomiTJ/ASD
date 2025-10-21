@@ -1,0 +1,132 @@
+.main-content-container {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    gap: 20px;
+}
+
+.main-content-container > div {
+    padding: 10px;
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+}
+
+.search-filter-container {
+    display: flex;
+    flex-direction: column;
+}
+.search-filter-container > div {
+
+}
+
+.search-filter-items{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.search-filter-items div{
+    padding: 8px;
+}
+
+.search-filter-items > div:first-child{
+    flex: 1;
+}
+.alert{
+    color: red;
+}
+.heading-container{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: space-between;
+}
+
+.transactions-container{
+    height: 600px;
+    overflow-y: auto;
+}
+input{
+
+    width: 100%;
+    background-color: #F3F3F5;
+    color: #717182;
+    border: #E5E5E5;
+    height: 30px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+.btn-container > div{
+    padding: 10px;
+}
+
+label {
+    font-size: 14px;
+}
+select{
+
+    width: 100%;
+    background-color: #F3F3F5;
+    border: #E5E5E5;
+    height: 35px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    background-color: #F3F3F5;
+    color: #000000;
+    border: #E5E5E5;
+    height: 35px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+button:hover {
+    background-color: #E5E5E5;
+}
+
+.date-range {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.date-range > div{
+    width: 100%;
+}
+
+
+.input-field{
+    width: 100%;
+    background-color: #F3F3F5;
+    border: #E5E5E5;
+    height: 17px;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 11px;
+    outline: none;
+}
+
+.btn-style{
+    font-family: 'Lato', sans-serif;
+    background-color: #F3F3F5;
+    border: #F3F3F5;
+    padding: 5px;
+    border-radius: 5px;
+    outline: none;
+}
+
+h4{
+    margin: 0;
+    padding: 10px;
+    font-family: 'Lato Semibold', sans-serif;
+}
+
