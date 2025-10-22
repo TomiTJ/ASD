@@ -24,7 +24,7 @@ public class AuditController {
 
     @GetMapping("/audit")
     public String viewAuditPage() {
-        return "audit"; // Loads audit.html
+        return "audits"; // Loads audit.html
     }
 
     @GetMapping("/api/audits")

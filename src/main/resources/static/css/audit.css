@@ -1,0 +1,130 @@
+/* Lay out the filter row horizontally */
+.toolbar #filters{
+    display: flex;
+    flex-wrap: wrap;      /* wrap on small screens */
+    gap: 12px;
+    align-items: end;     /* align button bottoms with inputs */
+}
+
+/* Labels show caption above the control */
+.toolbar label{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+/* Make buttons inline-sized, not full-width */
+.toolbar button{
+    display: inline-flex;           /* override any global block rules */
+    width: auto;                    /* override any width:100% */
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+/* Optional: subtle style for the Reset button */
+.toolbar .ghost{
+    background: transparent;
+    border: 1px solid var(--border, #ddd);
+}
+
+/* Tighter layout on narrow screens */
+@media (max-width: 700px){
+    .toolbar #filters { gap: 10px; }
+}
+
+/* ===== Audit table ===== */
+
+.table-wrap{
+    background: var(--card, #fff);
+    border: 1px solid var(--border, #e6e6e6);
+    border-radius: 10px;
+    overflow: auto;            /* horizontal/vertical scroll if needed */
+    max-height: 65vh;          /* keep header sticky within a viewport */
+}
+
+.table{
+    width: 100%;
+    min-width: 920px;          /* keep columns readable on narrow screens */
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--text, #111);
+    font-size: 0.95rem;
+}
+
+.table thead th{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--table-head, #f7f7f9);
+    color: var(--text-strong, #222);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border, #ddd);
+}
+
+.table tbody td{
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--row-border, #eee);
+    vertical-align: middle;
+}
+
+.table tbody tr:nth-child(even){
+    background: var(--row-alt, #fafafa);
+}
+
+.table tbody tr:hover{
+    background: var(--row-hover, #f2f7ff);
+}
+
+/* Column sizing (When, User, Action, Resource, Request ID, Audit ID) */
+.table thead th:nth-child(1){ width: 180px; }  /* When */
+.table thead th:nth-child(2){ width: 140px; }  /* User */
+.table thead th:nth-child(3){ width: 120px; }  /* Action */
+.table thead th:nth-child(4){ min-width: 280px; } /* Resource */
+.table thead th:nth-child(5){ width: 240px; }  /* Request ID */
+.table thead th:nth-child(6){ width: 240px; }  /* Audit ID */
+
+/* Monospace & truncation for long IDs */
+.mono{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9rem;
+}
+.table td.mono,
+.table td .mono{
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tiny helper for dimmed secondary text */
+.muted{ color: #6b7280; }
+
+/* Pills for actions */
+.tag{
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #eef3ff;
+    border: 1px solid #dfe9ff;
+}
+
+/* Empty state inside the table wrapper */
+.empty{
+    padding: 16px;
+    color: #666;
+    text-align: center;
+}
+
+/* Make table usable on very small screens */
+@media (max-width: 700px){
+    .table{ min-width: 760px; }
+}
