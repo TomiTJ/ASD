@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Audit</title>
+
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/reports-layout.css}">
+    <link rel="stylesheet" th:href="@{/css/audit.css}">
+</head>
+<body>
+<div class="main-layout">
+    <div class="top-bar">
+        <div class="name-card">
+            <div th:text="${userName}">John Doe</div>
+            <div class="position" th:text="${userRole}">Admin</div>
+        </div>
+        <div class="img-placeholder"></div>
+    </div>
+
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
+
+    <div class="main-content-container">
+        <h2>Audit Analytics</h2>
+
+        <section class="card audit-card">
+            <div class="toolbar">
+                <form id="filters" onsubmit="return false;">
+                    <label>
+                        Action
+                        <select id="filterAction">
+                            <option value="">Any</option>
+                            <option>CREATE</option>
+                            <option>READ</option>
+                            <option>UPDATE</option>
+                            <option>DELETE</option>
+                            <option>APPROVE</option>
+                            <option>REJECT</option>
+                            <option>RESET_PASSWORD</option>
+                            <option>LOGIN</option>
+                            <option>LOGOUT</option>
+                        </select>
+                    </label>
+                    <label>
+                        From
+                        <!-- keep 'date' if your API accepts dates; switch to 'datetime-local' if you filter by time -->
+                        <input id="filterFrom" type="date">
+                    </label>
+                    <label>
+                        To
+                        <input id="filterTo" type="date">
+                    </label>
+                    <button id="applyBtn" type="button">Apply</button>
+                    <button id="resetBtn" type="button" class="ghost">Reset</button>
+                </form>
+            </div>
+
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Resource</th>
+                        <th>Request ID</th>
+                        <th>Audit ID</th>
+                    </tr>
+                    </thead>
+                    <tbody id="auditRows"></tbody>
+                </table>
+                <div id="emptyState" class="empty" hidden>No audit events yet.</div>
+            </div>
+
+            <footer class="footer">
+                <div id="totalLabel">Total: 0</div>
+            </footer>
+        </section>
+    </div>
+
+    <div class="footer"></div>
+</div>
+
+<script>
+    (function () {
+        console.log('[audits] inline JS loaded');
+
+        const rowsEl   = document.getElementById('auditRows');
+        const emptyEl  = document.getElementById('emptyState');
+        const totalEl  = document.getElementById('totalLabel');
+        const applyBtn = document.getElementById('applyBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const actionEl = document.getElementById('filterAction');
+        const fromEl   = document.getElementById('filterFrom');
+        const toEl     = document.getElementById('filterTo');
+
+        function pad2(n){ return String(n).padStart(2,'0'); }
+        function fmtWhen(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (isNaN(d)) return String(iso).replace('T',' ').slice(0,19);
+            return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+
+                pad2(d.getHours())+':'+pad2(d.getMinutes())+':'+pad2(d.getSeconds());
+        }
+
+        function render(data) {
+            rowsEl.innerHTML = '';
+            if (!Array.isArray(data) || data.length === 0) {
+                emptyEl.hidden = false;
+                totalEl.textContent = 'Total: 0';
+                return;
+            }
+            emptyEl.hidden = true;
+            totalEl.textContent = 'Total: ' + data.length;
+
+            const frag = document.createDocumentFragment();
+            data.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td>${fmtWhen(a.createdAt)}</td>
+        <td class="mono">${a.userName ?? ('User#' + (a.userId ?? ''))}</td>
+        <td><span class="tag">${a.action ?? ''}</span></td>
+        <td>${a.resourceType ?? ''}${a.resourceId ? ' <span class="mono">/ ' + a.resourceId + '</span>' : ''}</td>
+        <td class="mono">${a.requestId ?? ''}</td>
+        <td class="mono">${a.auditEventId ?? ''}</td>
+      `;
+                frag.appendChild(tr);
+            });
+            rowsEl.appendChild(frag);
+        }
+
+        function buildParams() {
+            const q = new URLSearchParams();
+            const action = actionEl?.value?.trim();
+            const from   = fromEl?.value?.trim();
+            const to     = toEl?.value?.trim();
+
+            if (action) q.set('action', action);
+
+            // send dates only if present; your backend can accept YYYY-MM-DD
+            if (from) q.set('from', from);
+            if (to)   q.set('to', to);
+
+            return q.toString();
+        }
+
+        async function loadAudits() {
+            const qs = buildParams();
+            const url = '/api/audits' + (qs ? ('?' + qs) : '');
+            console.log('[audits] fetching:', url);
+            try {
+                const res = await fetch(url, {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const ct = res.headers.get('content-type') || '';
+                if (!res.ok || !ct.includes('application/json')) {
+                    console.error('[audits] bad response', res.status, ct);
+                    render([]);
+                    return;
+                }
+                const data = await res.json();
+                console.log('[audits] received', data);
+                render(data);
+            } catch (e) {
+                console.error('[audits] fetch error', e);
+                render([]);
+            }
+        }
+
+        function wire() {
+            applyBtn?.addEventListener('click', loadAudits);
+            resetBtn?.addEventListener('click', () => {
+                if (actionEl) actionEl.value = '';
+                if (fromEl)   fromEl.value   = '';
+                if (toEl)     toEl.value     = '';
+                loadAudits();
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => { wire(); loadAudits(); });
+        } else {
+            wire(); loadAudits();
+        }
+    })();
+</script>
+</body>
+</html>
