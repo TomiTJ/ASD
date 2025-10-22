@@ -1,34 +1,17 @@
-
 package com.asd.services;
 
 import com.asd.dto.AuditDto;
 import com.asd.model.Action;
+import com.asd.model.Audit;
 import com.asd.model.ResourceType;
+import com.asd.model.User;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public interface AuditService {
-
-    /**
-     * List audit events, optionally filtered by action and date range (inclusive of both from and to dates).
-     */
-    List<AuditDto> list(Action action, LocalDate from, LocalDate to);
-
-    /**
-     * Convenience method for callers that just want everything.
-     */
-    default List<AuditDto> findAllAudits() {
-        return list(null, null, null);
-    }
-
-    /**
-     * Persist a new audit event and return it as a DTO.
-     */
-    AuditDto record(UUID actorUserId,
-                    Action action,
-                    ResourceType resourceType,
-                    UUID resourceId,
-                    UUID requestId);
+    void recordAction(User actor, Action action, ResourceType resourceType, UUID resourceId);
+    List<AuditDto> list(Action action, Instant from, Instant to);
 }

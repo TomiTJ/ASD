@@ -1,5 +1,2 @@
 package com.asd.model;
-
-public enum ResourceType {
-    User, Customer, Account, Transaction
-}
+public enum ResourceType { USER, ACCOUNT, TRANSACTION, CUSTOMER,LOAN }

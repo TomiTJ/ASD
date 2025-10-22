@@ -1,27 +1,24 @@
 package com.asd.dto;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 
+import lombok.*;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.time.Instant;
-import java.util.stream.Collector;
-import com.asd.model.Audit;
 import com.asd.model.Action;
 import com.asd.model.ResourceType;
 
-import lombok.Data;
-
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuditDto {
     private UUID auditEventId;
-    private UUID actorUserId;
+    private Integer userId;
+    private String userName;
     private Action action;
     private ResourceType resourceType;
-    private  UUID resourceId;
-    private  UUID requestId;
-    private LocalDateTime createdAt;
-
+    private UUID resourceId;
+    private UUID requestId;
+    private Instant createdAt;
 }
