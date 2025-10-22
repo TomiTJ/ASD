@@ -11,7 +11,7 @@ public class User {
 
     public enum Status {
         ACTIVE,
-        DEACTIVATED
+        INACTIVE, DEACTIVATED
     }
 
     public enum Role {
