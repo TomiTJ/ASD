@@ -1,8 +1,11 @@
 package com.asd.services.impl;
 
+import com.asd.dto.AccountDto;
 import com.asd.dto.TransactionDto;
+import com.asd.model.Account;
 import com.asd.repository.AccountRepository;
 import com.asd.repository.TransactionRepository;
+import com.asd.services.AccountService;
 import com.asd.services.ReportService;
 import com.asd.services.TransactionService;
 import com.asd.util.ExportUtil;
@@ -19,11 +22,11 @@ import java.util.List;
 @Service
 public class ReportServiceImpl implements ReportService {
     private final TransactionService transactionService;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    public ReportServiceImpl(TransactionService transactionService, AccountRepository accountRepository) {
+    public ReportServiceImpl(TransactionService transactionService, AccountService accountService) {
         this.transactionService = transactionService;
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
     }
 
     public byte[] generateReport(String type, String format) throws IOException {
@@ -51,16 +54,40 @@ public class ReportServiceImpl implements ReportService {
                         ))
                         .toList();
 
-                return switch (format.toLowerCase()) {
-                    case "excel" -> ExportUtil.toExcel(headers, data);
-                    case "csv" -> ExportUtil.toCSV(headers, data);
-                    case "pdf" -> ExportUtil.toPDF(headers, data);
-                    default -> throw new IllegalArgumentException("Unsupported format: " + format);
-                };
+                return export(format,headers,data);
+            }
+            case "account" -> {
+                List<AccountDto> accounts = accountService.findAllAccounts();
+                List<AccountDto> filtered = filterAccountsByDate(accounts, start,end);
+                headers = List.of("Account ID", "Account Number", "Customer ID", "Account Type", "Account Status", "Balance", "Created At", "Updated At");
+                data = filtered.stream()
+                        .map(a -> List.of(
+                                String.valueOf(a.getId()),
+                                String.valueOf(a.getAccountNumber()),
+                                String.valueOf(a.getCustomerId()),
+                                String.valueOf(a.getAccountType()),
+                                String.valueOf(a.getAccountStatus()),
+                                String.format("$%.2f", a.getBalance()),
+                                String.valueOf(a.getCreatedAt()),
+                                String.valueOf(a.getUpdatedAt())
+                        ))
+                        .toList();
+                return export(format,headers,data);
             }
             default -> throw new IllegalArgumentException("Unsupported report type: " + type);
         }
     }
+
+    private byte[] export(String format, List<String> headers, List<List<String>> data) throws IOException {
+        return switch (format.toLowerCase()) {
+            case "excel" -> ExportUtil.toExcel(headers, data);
+            case "csv" -> ExportUtil.toCSV(headers, data);
+            case "pdf" -> ExportUtil.toPDF(headers, data);
+            default -> throw new IllegalArgumentException("Unsupported format: " + format);
+        };
+    }
+
+
 
     private List<TransactionDto> filterByDate(List<TransactionDto> transactions, String start, String end) {
 
@@ -85,8 +112,38 @@ public class ReportServiceImpl implements ReportService {
 
         return transactions.stream()
                 .filter(t -> {
-                    OffsetDateTime created = t.getCreatedAt();
+                    OffsetDateTime created = t.getCreatedAt(); //filters if getCreatedAt() is between afterStart and beforeEnd
                     if (created == null) return false;
+                    boolean afterStart = (startDate == null || !created.isBefore(startDate));
+                    boolean beforeEnd = (endDate == null || !created.isAfter(endDate));
+                    return afterStart && beforeEnd;
+                })
+                .toList();
+    }
+    private List<AccountDto> filterAccountsByDate(List<AccountDto> accounts, String start, String end) {
+
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+
+        if (start != null && !start.isBlank()) {
+            LocalDate startLocalDate = LocalDate.parse(start);
+            startDate = startLocalDate.atStartOfDay();
+        } else {
+            startDate = null;
+        }
+
+        if (end != null && !end.isBlank()) {
+            LocalDate endLocalDate = LocalDate.parse(end);
+            endDate = endLocalDate.atTime(23, 59, 59);
+        } else {
+            endDate = null;
+        }
+
+        return accounts.stream()
+                .filter(t -> {
+                    LocalDateTime created = t.getCreatedAt();
+                    if (created == null) return false;
+
                     boolean afterStart = (startDate == null || !created.isBefore(startDate));
                     boolean beforeEnd = (endDate == null || !created.isAfter(endDate));
                     return afterStart && beforeEnd;

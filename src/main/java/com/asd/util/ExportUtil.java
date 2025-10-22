@@ -55,7 +55,7 @@ public class ExportUtil {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(new Paragraph("Transaction Report"));
+            document.add(new Paragraph("Report"));
             document.add(new Paragraph("Generated on: " + java.time.LocalDate.now()));
             document.add(new Paragraph("\n"));
 
