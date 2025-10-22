@@ -10,14 +10,17 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String full_name;
+
+    @Column(name = "full_name")  // ADD THIS LINE
+    private String name;
+
     private String email;
 
     public Customer() {}
 
-    public Customer(Long id, String full_name, String email) {
+    public Customer(Long id, String name, String email) {
         this.id = id;
-        this.full_name = full_name;
+        this.name = name;
         this.email = email;
     }
 }

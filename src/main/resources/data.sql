@@ -133,72 +133,44 @@ VALUES
 -- Depends on an existing `users` table with `id` (PK) and `email`
 -- =========================================================
 
--- 1) DROP (safe if not present)
+-- Drop old table if needed
 DROP TABLE IF EXISTS account CASCADE;
 
--- 2) CREATE
+-- CREATE accounts table (references customers, not users)
 CREATE TABLE account (
                          id             BIGSERIAL PRIMARY KEY,
-                         accountNumber  INTEGER      NOT NULL UNIQUE,
-                         userId         INTEGER      NOT NULL,
-                         accountType    VARCHAR(20)  NOT NULL,
-                         accountStatus  VARCHAR(20)  NOT NULL,
+                         account_number VARCHAR(50)  NOT NULL UNIQUE,
+                         customer_id    INTEGER      NOT NULL,
+                         account_type   VARCHAR(20)  NOT NULL,
+                         account_status VARCHAR(20)  NOT NULL,
                          balance        NUMERIC(14,2) NOT NULL DEFAULT 0,
+                         created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-                         CONSTRAINT fk_account_user
-                             FOREIGN KEY (userId) REFERENCES users(id) ON DELETE RESTRICT,
+                         CONSTRAINT fk_account_customer
+                             FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
 
-    -- Enforce enum values (must match your Java enums exactly)
                          CONSTRAINT chk_account_type
-                             CHECK (accountType IN ('TRANSACTIONAL','SAVINGS','CREDIT','BUSINESS')),
+                             CHECK (account_type IN ('TRANSACTIONAL','SAVINGS','CREDIT','BUSINESS')),
                          CONSTRAINT chk_account_status
-                             CHECK (accountStatus IN ('OPEN','FROZEN','CLOSED'))
+                             CHECK (account_status IN ('OPEN','FROZEN','CLOSED'))
 );
 
-CREATE INDEX idx_account_userId ON account(userId);
+CREATE INDEX idx_account_customer_id ON account(customer_id);
 
--- 3) SEED (uses INSERT ... SELECT to resolve userId via email)
---    If an email does not exist in users, that row will be skipped.
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456701, u.id, 'SAVINGS',        'OPEN',   1250.75 FROM users u WHERE u.email = 'ava.patel@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456702, u.id, 'TRANSACTIONAL',  'OPEN',     85.10  FROM users u WHERE u.email = 'ava.patel@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456703, u.id, 'SAVINGS',        'OPEN',   2200.00 FROM users u WHERE u.email = 'liam.nguyen@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456704, u.id, 'CREDIT',         'OPEN',   -350.00 FROM users u WHERE u.email = 'liam.nguyen@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456705, u.id, 'TRANSACTIONAL',  'OPEN',    640.25 FROM users u WHERE u.email = 'mia.chen@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456706, u.id, 'SAVINGS',        'FROZEN',  980.00 FROM users u WHERE u.email = 'noah.williams@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456707, u.id, 'BUSINESS',       'OPEN',  15200.00 FROM users u WHERE u.email = 'isla.thompson@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456708, u.id, 'TRANSACTIONAL',  'OPEN',     12.34 FROM users u WHERE u.email = 'ethan.brown@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456709, u.id, 'SAVINGS',        'OPEN',   3050.90 FROM users u WHERE u.email = 'zoe.martin@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456710, u.id, 'CREDIT',         'OPEN',   -120.00 FROM users u WHERE u.email = 'lucas.garcia@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456711, u.id, 'SAVINGS',        'OPEN',    410.00 FROM users u WHERE u.email = 'aria.johnson@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456712, u.id, 'BUSINESS',       'OPEN',  78450.00 FROM users u WHERE u.email = 'leo.robinson@example.com';
-
--- Extra examples (closed/frozen)
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456713, u.id, 'TRANSACTIONAL',  'CLOSED',    0.00 FROM users u WHERE u.email = 'ethan.brown@example.com';
-
-INSERT INTO account (accountNumber, userId, accountType, accountStatus, balance)
-SELECT 1000456714, u.id, 'CREDIT',         'FROZEN',  -999.99 FROM users u WHERE u.email = 'ava.patel@example.com';
+-- SEED accounts (using customer IDs 1-10 from your customers table)
+INSERT INTO account (account_number, customer_id, account_type, account_status, balance) VALUES
+                                                                                             ('ACC-1000456701', 1, 'TRANSACTIONAL', 'OPEN',   1250.75),
+                                                                                             ('ACC-1000456702', 1, 'SAVINGS',       'OPEN',   2500.00),
+                                                                                             ('ACC-1000456703', 2, 'TRANSACTIONAL', 'OPEN',    450.10),
+                                                                                             ('ACC-1000456704', 3, 'SAVINGS',       'OPEN',   3200.00),
+                                                                                             ('ACC-1000456705', 3, 'CREDIT',        'OPEN',   -350.50),
+                                                                                             ('ACC-1000456706', 4, 'TRANSACTIONAL', 'OPEN',    890.25),
+                                                                                             ('ACC-1000456707', 5, 'SAVINGS',       'OPEN',   5200.00),
+                                                                                             ('ACC-1000456708', 5, 'BUSINESS',      'OPEN',  25000.00),
+                                                                                             ('ACC-1000456709', 6, 'TRANSACTIONAL', 'FROZEN',  120.00),
+                                                                                             ('ACC-1000456710', 7, 'SAVINGS',       'OPEN',   1800.90),
+                                                                                             ('ACC-1000456711', 8, 'TRANSACTIONAL', 'OPEN',    340.00),
+                                                                                             ('ACC-1000456712', 9, 'BUSINESS',      'OPEN',  78450.00),
+                                                                                             ('ACC-1000456713', 10, 'SAVINGS',      'OPEN',   2100.00),
+                                                                                             ('ACC-1000456714', 10, 'CREDIT',       'CLOSED',  -120.00);

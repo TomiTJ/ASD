@@ -69,7 +69,7 @@
                     </tr>
                     <tr th:each="transaction : ${transactions}">
                         <td th:text="${transaction.id}"></td>
-                        <td th:text="${transaction.getCustomer().getFull_name()}"></td>
+                        <td th:text="${transaction.getCustomer().getName()}"></td>
                         <td th:text="${transaction.getType()}"></td>
                         <td th:text="'$' + ${transaction.getAmount()}"></td>
                         <td th:text="${transaction.getStatus()}"></td>

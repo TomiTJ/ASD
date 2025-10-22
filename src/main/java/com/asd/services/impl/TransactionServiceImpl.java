@@ -34,7 +34,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         return transactions.stream()
                 .filter(t -> {
-                    String customerName = t.getCustomer() != null ? t.getCustomer().getFull_name().toLowerCase() : "";
+                    String customerName = t.getCustomer() != null ? t.getCustomer().getName().toLowerCase() : "";
                     String transactionId = String.valueOf(t.getId());
                     String transactionType = t.getType() != null ? t.getType().name() : "";
                     String transactionStatus = t.getStatus() != null ? t.getStatus().name() : "";

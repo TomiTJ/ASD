@@ -43,7 +43,7 @@ public class ReportServiceImpl implements ReportService {
                 data = filtered.stream()
                         .map(t -> List.of(
                                 String.valueOf(t.getId()),
-                                String.valueOf(t.getCustomer().getFull_name()),
+                                String.valueOf(t.getCustomer().getName()),
                                 String.valueOf(t.getType()),
                                 String.format("$%.2f", t.getAmount()),
                                 String.valueOf(t.getStatus()),

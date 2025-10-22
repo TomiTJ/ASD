@@ -2,13 +2,14 @@ package com.asd.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "account")
+@Table(name="account")
 public class Account {
 
-    /** WHAT the account is (product/type): e.g., SAVINGS, CREDIT, BUSINESS, TRANSACTIONAL */
     public enum AccountType {
         TRANSACTIONAL,
         SAVINGS,
@@ -16,44 +17,68 @@ public class Account {
         BUSINESS
     }
 
-    /** Lifecycle/status: e.g., OPEN, FROZEN, CLOSED */
     public enum AccountStatus {
         OPEN,
-        FROZEN,
-        CLOSED
+        CLOSED,
+        FROZEN
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Human/accounting number; keep int if that’s how your DB is defined */
-    @Column(nullable = false, unique = true)
-    private int accountNumber;
+    @Column(unique = true, nullable = false)
+    private String accountNumber;
 
-    /** Foreign key to users.id (simple scalar; or change to @ManyToOne<User> if you want) */
     @Column(nullable = false)
-    private int userId;
+    private Long customerId;  // FK to customers table
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private AccountType accountType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private AccountStatus accountStatus;
 
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal balance;
+
     @Column(nullable = false)
-    private double balance;
+    private LocalDateTime createdAt;
 
-    public Account() {}
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
-    public Account(int accountNumber, int userId,
-                   AccountType accountType, AccountStatus accountStatus, double balance) {
+    public Account() {
+        this.balance = BigDecimal.ZERO;
+        this.accountStatus = AccountStatus.OPEN;
+    }
+
+    public Account(String accountNumber, Long customerId, AccountType accountType,
+                   AccountStatus accountStatus, BigDecimal balance) {
         this.accountNumber = accountNumber;
-        this.userId = userId;
+        this.customerId = customerId;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.balance = balance;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+        if (this.balance == null) {
+            this.balance = BigDecimal.ZERO;
+        }
+        if (this.accountStatus == null) {
+            this.accountStatus = AccountStatus.OPEN;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
