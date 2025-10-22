@@ -127,6 +127,12 @@ public class UserController {
         user.setStatus(updatedUser.getStatus());
 
         users.save(user);
+
+        Integer currentId = (Integer) session.getAttribute("userId");
+        User actor = (currentId != null) ? users.getReferenceById(currentId) : null;
+        UUID resourceUuid = UUID.nameUUIDFromBytes(("USER:" + id).getBytes());
+        auditService.recordAction(actor, Action.UPDATE, ResourceType.USER, resourceUuid);
+
         redirectAttributes.addAttribute("msg", "User updated successfully!");
         return "redirect:/users";
     }
