@@ -25,7 +25,7 @@ public class ExportUtil {
 
     private ExportUtil() {}
 
-    //Excel Export (XLSX)
+
     public static byte[] toExcel(List<String> headers, List<List <String>> data) throws IOException {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -77,10 +77,11 @@ public class ExportUtil {
         }
     }
 
+
     public static byte[] toCSV(List<String> headers, List<List <String>> data) throws IOException {
         try(ByteArrayOutputStream out = new ByteArrayOutputStream()){
             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT);
-            csvPrinter.printRecord(headers.toArray(new String[0]));
+            csvPrinter.printRecord((Object[]) headers.toArray(new String[0]));
 
             for (List<String> row : data) {
                 csvPrinter.printRecord(row);
