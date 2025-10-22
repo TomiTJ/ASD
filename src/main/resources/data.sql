@@ -1,8 +1,10 @@
 -- Drop old tables if they exist
-DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS customers;
-DROP TABLE IF EXISTS audit_event;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS audit_event CASCADE;
+DROP TABLE IF EXISTS transaction CASCADE;
+DROP TABLE IF EXISTS account CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- then CREATE TABLE ... in the correct order (users first, then account, etc.)
 
 -- Users table
 CREATE TABLE users (
