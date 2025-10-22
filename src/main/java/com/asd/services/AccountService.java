@@ -4,12 +4,12 @@ import com.asd.dto.AccountDto;
 import java.util.List;
 
 public interface AccountService {
+    void createAccount(AccountDto accountDto);
     List<AccountDto> findAllAccounts();
     List<AccountDto> searchAccounts(String search);
-    AccountDto findAccountById(Long id);
-    AccountDto createAccount(AccountDto accountDto);
-    AccountDto updateAccount(AccountDto accountDto);
+    void updateAccount(AccountDto accountDto);
     void freezeAccount(Long id);
+    void unfreezeAccount(Long id);  // ADDED: Unfreeze method
     void closeAccount(Long id);
     void deleteAccount(Long id);
 }

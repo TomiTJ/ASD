@@ -9,6 +9,7 @@ import com.asd.services.AccountService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,55 +26,52 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void createAccount(AccountDto accountDto) {
+        Customer customer = customerRepository.findById(accountDto.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + accountDto.getCustomerId()));
+
+        Account account = new Account();
+        account.setAccountNumber(accountDto.getAccountNumber());
+        account.setCustomerId(customer.getId());
+        account.setAccountType(accountDto.getAccountType());
+        account.setAccountStatus(Account.AccountStatus.OPEN);
+        account.setBalance(accountDto.getBalance());
+        account.setCreatedAt(LocalDateTime.now());
+        account.setUpdatedAt(LocalDateTime.now());
+
+        accountRepository.save(account);
+    }
+
+    @Override
     public List<AccountDto> findAllAccounts() {
-        List<Account> accounts = accountRepository.findAll();
-        return accounts.stream()
-                .map(this::mapToAccountDto)
+        return accountRepository.findAll().stream()
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AccountDto> searchAccounts(String search) {
-        List<Account> accounts = accountRepository.findAll();
-        String searchLower = search.toLowerCase();
+        List<Account> accounts = accountRepository.findByAccountNumberContainingIgnoreCase(search);
+
+        if (accounts.isEmpty()) {
+            List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(search);
+            if (!customers.isEmpty()) {
+                List<Long> customerIds = customers.stream()
+                        .map(Customer::getId)
+                        .collect(Collectors.toList());
+                accounts = accountRepository.findByCustomerIdIn(customerIds);
+            }
+        }
 
         return accounts.stream()
-                .filter(account -> {
-                    Customer customer = customerRepository.findById(account.getCustomerId()).orElse(null);
-                    if (customer != null) {
-                        return customer.getName().toLowerCase().contains(searchLower) ||
-                                account.getAccountNumber().toLowerCase().contains(searchLower);
-                    }
-                    return account.getAccountNumber().toLowerCase().contains(searchLower);
-                })
-                .map(this::mapToAccountDto)
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AccountDto findAccountById(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        return mapToAccountDto(account);
-    }
-
-    @Override
-    public AccountDto createAccount(AccountDto accountDto) {
-        Account account = new Account();
-        account.setAccountNumber(accountDto.getAccountNumber());
-        account.setCustomerId(accountDto.getCustomerId());
-        account.setAccountType(accountDto.getAccountType());
-        account.setAccountStatus(Account.AccountStatus.OPEN);
-        account.setBalance(accountDto.getBalance() != null ? accountDto.getBalance() : java.math.BigDecimal.ZERO);
-
-        Account savedAccount = accountRepository.save(account);
-        return mapToAccountDto(savedAccount);
-    }
-
-    @Override
-    public AccountDto updateAccount(AccountDto accountDto) {
+    public void updateAccount(AccountDto accountDto) {
         Account account = accountRepository.findById(accountDto.getId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + accountDto.getId()));
 
         if (accountDto.getAccountStatus() != null) {
             account.setAccountStatus(accountDto.getAccountStatus());
@@ -81,39 +79,47 @@ public class AccountServiceImpl implements AccountService {
         if (accountDto.getBalance() != null) {
             account.setBalance(accountDto.getBalance());
         }
-        if (accountDto.getAccountType() != null) {
-            account.setAccountType(accountDto.getAccountType());
-        }
+        account.setUpdatedAt(LocalDateTime.now());
 
-        Account savedAccount = accountRepository.save(account);
-        return mapToAccountDto(savedAccount);
+        accountRepository.save(account);
     }
 
     @Override
     public void freezeAccount(Long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
         account.setAccountStatus(Account.AccountStatus.FROZEN);
+        account.setUpdatedAt(LocalDateTime.now());
+        accountRepository.save(account);
+    }
+
+    // ADDED: Unfreeze method
+    @Override
+    public void unfreezeAccount(Long id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+        account.setAccountStatus(Account.AccountStatus.OPEN);
+        account.setUpdatedAt(LocalDateTime.now());
         accountRepository.save(account);
     }
 
     @Override
     public void closeAccount(Long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
         account.setAccountStatus(Account.AccountStatus.CLOSED);
+        account.setUpdatedAt(LocalDateTime.now());
         accountRepository.save(account);
     }
 
     @Override
     public void deleteAccount(Long id) {
-        if (!accountRepository.existsById(id)) {
-            throw new RuntimeException("Account not found");
-        }
-        accountRepository.deleteById(id);
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+        accountRepository.delete(account);
     }
 
-    private AccountDto mapToAccountDto(Account account) {
+    private AccountDto convertToDto(Account account) {
         AccountDto dto = new AccountDto();
         dto.setId(account.getId());
         dto.setAccountNumber(account.getAccountNumber());
@@ -121,20 +127,13 @@ public class AccountServiceImpl implements AccountService {
         dto.setAccountType(account.getAccountType());
         dto.setAccountStatus(account.getAccountStatus());
         dto.setBalance(account.getBalance());
-        dto.setCreatedAt(account.getCreatedAt());
-        dto.setUpdatedAt(account.getUpdatedAt());
 
-        // Fetch customer details
-        Customer customer = customerRepository.findById(account.getCustomerId()).orElse(null);
-        if (customer != null) {
+        // Get customer details
+        customerRepository.findById(account.getCustomerId()).ifPresent(customer -> {
             dto.setCustomerName(customer.getName());
             dto.setCustomerEmail(customer.getEmail());
-        } else {
-            dto.setCustomerName("Unknown");
-            dto.setCustomerEmail("N/A");
-        }
+        });
 
         return dto;
     }
-
 }

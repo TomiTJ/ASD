@@ -1,45 +1,10 @@
 <!DOCTYPE html>
-
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Customer Accounts</title>
-    <link rel="stylesheet" th:href="@{css/main.css}">
-    <style>
-        .content-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; }
-        .search-container { margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; }
-        .search-container form { display: flex; gap: 10px; align-items: center; }
-        .search-container input { flex: 1; max-width: 400px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background:#f5f5f5; font-weight: 600; }
-
-        .btn { display:inline-block; padding:6px 12px; border:1px solid #333; border-radius:6px;
-            background:#fafafa; cursor:pointer; text-decoration:none; margin: 0 2px; }
-        .btn:hover { background:#e9e9e9; }
-        .btn-primary { background:#007bff; color:white; border-color:#007bff; }
-        .btn-warning { background:#ffc107; color:black; border-color:#ffc107; }
-        .btn-danger { background:#dc3545; color:white; border-color:#dc3545; }
-        .btn:disabled { background:#eee; color:#999; cursor:not-allowed; }
-
-        .msg { padding:10px; margin:10px 0; border-radius:6px; background:#e8f5e9;
-            border:1px solid #4caf50; color:#2e7d32; }
-
-        .create-form { background:#fff; padding:20px; border:1px solid #eee;
-            border-radius:10px; margin-top:20px; }
-        .form-row { display:flex; gap:15px; margin-bottom:15px; }
-        .form-group { flex:1; }
-        .form-group label { display:block; margin-bottom:5px; font-weight:600; }
-        .form-group input, .form-group select { width:100%; padding:8px;
-            border:1px solid #ccc; border-radius:4px; }
-
-        .status-badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-        .status-open { background: #d4edda; color: #155724; }
-        .status-frozen { background: #fff3cd; color: #856404; }
-        .status-closed { background: #f8d7da; color: #721c24; }
-    </style>
-
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/transactions-layout.css}">
+    <link rel="stylesheet" th:href="@{/css/accounts.css}">
+    <title>Customer Account Management</title>
 </head>
 <body>
 <div class="main-layout">
@@ -48,121 +13,159 @@
             <div th:text="${userName}"></div>
             <div class="position" th:text="${userRole}"></div>
         </div>
-        <div class="img-placeholder"></div>
+        <div class="img-placeholder"> </div>
     </div>
 
-    <div th:replace="fragments/navbar2 :: navbar2"></div>
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
 
     <div class="main-content-container">
-        <!-- Flash message -->
-        <div th:if="${msg}" class="msg" th:text="${msg}"></div>
-
-        <div class="content-header">
-            <h2>Customer Account Management</h2>
+        <div class="heading-container">
+            <h4>Customer Account Management</h4>
+            <div>
+                <div th:if="${msg}" class="alert alert-info" th:text="${msg}"></div>
+            </div>
         </div>
 
-        <!-- Search Section -->
-        <div class="search-container">
+        <div class="search-filter-container">
+            <h4>Search Accounts</h4>
             <form th:action="@{/account}" method="get">
-                <input type="text" name="search" th:value="${search}"
-                       placeholder="Search by customer name or account number..." />
-                <button type="submit" class="btn">Search</button>
-                <a href="/account" class="btn">Clear</a>
+                <div class="search-filter-items">
+                    <div>
+                        <input type="text"
+                               id="search"
+                               name="search"
+                               th:value="${search}"
+                               placeholder="Search by customer name or account number...">
+                    </div>
+                    <div>
+                        <button class="btn-style" type="submit">Search</button>
+                    </div>
+                    <div>
+                        <a th:href="@{/account}">
+                            <button class="btn-style" type="button">Clear</button>
+                        </a>
+                    </div>
+                </div>
             </form>
         </div>
 
-        <!-- Accounts Table -->
-        <h3>Accounts List</h3>
-        <table>
-            <thead>
-            <tr>
-                <th style="width:60px">ID</th>
-                <th style="width:150px">Account #</th>
-                <th>Customer Name</th>
-                <th>Email</th>
-                <th style="width:120px">Type</th>
-                <th style="width:130px">Balance (AUD)</th>
-                <th style="width:100px">Status</th>
-                <th style="width:280px">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="account : ${accounts}">
-                <td th:text="${account.id}"></td>
-                <td th:text="${account.accountNumber}"></td>
-                <td th:text="${account.customerName}"></td>
-                <td th:text="${account.customerEmail}"></td>
-                <td th:text="${account.accountType}"></td>
-                <td th:text="'$' + ${#numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}"></td>
-                <td>
-                    <span class="status-badge"
-                          th:classappend="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN} ? 'status-open' :
-                                         (${account.accountStatus == T(com.asd.model.Account.AccountStatus).FROZEN} ? 'status-frozen' : 'status-closed')"
-                          th:text="${account.accountStatus}"></span>
-                </td>
-                <td>
-                    <!-- Only show freeze button if account is OPEN -->
-                    <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN}"
-                          th:action="@{/account/freeze/{id}(id=${account.id})}" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-warning">Freeze</button>
-                    </form>
+        <div class="transactions-container">
+            <h4>Accounts List</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Account #</th>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Balance (AUD)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="account : ${accounts}">
+                    <td th:text="${account.id}"></td>
+                    <td th:text="${account.accountNumber}"></td>
+                    <td th:text="${account.customerName}"></td>
+                    <td th:text="${account.customerEmail}"></td>
+                    <td th:text="${account.accountType}"></td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(account.balance, 1, 2)}"></td>
+                    <td>
+                        <span class="status-badge"
+                              th:classappend="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN} ? 'status-open' :
+                                               (${account.accountStatus == T(com.asd.model.Account.AccountStatus).FROZEN} ? 'status-frozen' : 'status-closed')"
+                              th:text="${account.accountStatus}">
+                        </span>
+                    </td>
+                    <td class="action-buttons">
+                        <!-- Freeze button - show only if account is OPEN -->
+                        <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN}"
+                              th:action="@{/account/freeze/{id}(id=${account.id})}"
+                              method="post"
+                              style="display:inline;">
+                            <button class="btn-action btn-freeze" type="submit">Freeze</button>
+                        </form>
 
-                    <!-- Only show close button if account is not CLOSED -->
-                    <form th:if="${account.accountStatus != T(com.asd.model.Account.AccountStatus).CLOSED}"
-                          th:action="@{/account/close/{id}(id=${account.id})}" method="post" style="display:inline">
-                        <button type="submit" class="btn">Close</button>
-                    </form>
+                        <!-- ADDED: Unfreeze button - show only if account is FROZEN -->
+                        <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).FROZEN}"
+                              th:action="@{/account/unfreeze/{id}(id=${account.id})}"
+                              method="post"
+                              style="display:inline;">
+                            <button class="btn-action btn-unfreeze" type="submit">Unfreeze</button>
+                        </form>
 
-                    <!-- Only admins can delete -->
-                    <form th:if="${userRole == 'ADMIN'}"
-                          th:action="@{/account/delete/{id}(id=${account.id})}" method="post" style="display:inline"
-                          onsubmit="return confirm('Delete this account permanently?');">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(accounts)}">
-                <td colspan="8" style="text-align:center; color:#999;">No accounts found</td>
-            </tr>
-            </tbody>
-        </table>
+                        <!-- Close button - show if account is not already closed -->
+                        <form th:if="${account.accountStatus != T(com.asd.model.Account.AccountStatus).CLOSED}"
+                              th:action="@{/account/close/{id}(id=${account.id})}"
+                              method="post"
+                              style="display:inline;">
+                            <button class="btn-action btn-close" type="submit">Close</button>
+                        </form>
 
-        <!-- Create New Account Form -->
-        <div class="create-form">
-            <h3>Create New Account</h3>
+                        <!-- Delete button - show only for admins -->
+                        <form th:if="${userRole == 'ADMIN'}"
+                              th:action="@{/account/delete/{id}(id=${account.id})}"
+                              method="post"
+                              style="display:inline;"
+                              onsubmit="return confirm('Are you sure you want to delete this account?');">
+                            <button class="btn-action btn-delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${accounts.isEmpty()}">
+                    <td colspan="8" style="text-align:center; color: gray;">No accounts found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="transactions-container" style="margin-top: 2rem;">
+            <h4>Create New Account</h4>
             <form th:action="@{/account/create}" method="post" th:object="${newAccount}">
-                <div class="form-row">
+                <div class="create-account-form">
                     <div class="form-group">
-                        <label>Customer</label>
-                        <select name="customerId" required>
+                        <label for="customerId">Customer</label>
+                        <select id="customerId" name="customerId" required>
                             <option value="">Select Customer...</option>
                             <option th:each="customer : ${customers}"
                                     th:value="${customer.id}"
-                                    th:text="${customer.name + ' (' + customer.email + ')'}"></option>
+                                    th:text="${customer.name + ' (' + customer.email + ')'}">
+                            </option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Account Type</label>
-                        <select name="accountType" required>
+                        <label for="accountType">Account Type</label>
+                        <select id="accountType" name="accountType" required>
                             <option value="">Select Type...</option>
-                            <option value="SAVINGS">Savings</option>
                             <option value="TRANSACTIONAL">Transactional</option>
+                            <option value="SAVINGS">Savings</option>
                             <option value="CREDIT">Credit</option>
                             <option value="BUSINESS">Business</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Initial Balance (AUD)</label>
-                        <input type="number" name="balance" step="0.01" min="0" value="0.00" required />
+                        <label for="balance">Initial Balance (AUD)</label>
+                        <input type="number"
+                               id="balance"
+                               name="balance"
+                               step="0.01"
+                               value="0.00"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn-style" type="submit">Create Account</button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Create Account</button>
             </form>
         </div>
     </div>
 
     <div class="footer"></div>
-
 </div>
 </body>
 </html>

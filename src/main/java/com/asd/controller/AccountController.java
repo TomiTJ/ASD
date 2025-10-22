@@ -123,6 +123,24 @@ public class AccountController {
         return "redirect:/account";
     }
 
+    // ADDED: Unfreeze endpoint
+    @PostMapping("/unfreeze/{id}")
+    public String unfreezeAccount(@PathVariable Long id,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
+        String guard = requireLogin(session);
+        if (guard != null) return guard;
+
+        try {
+            accountService.unfreezeAccount(id);
+            redirectAttributes.addAttribute("msg", "Account unfrozen successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("msg", "Error unfreezing account: " + e.getMessage());
+        }
+
+        return "redirect:/account";
+    }
+
     @PostMapping("/close/{id}")
     public String closeAccount(@PathVariable Long id,
                                HttpSession session,

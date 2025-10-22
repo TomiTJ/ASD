@@ -2,25 +2,17 @@ package com.asd.repository;
 
 import com.asd.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findByAccountNumber(String accountNumber);
+    // Search by account number (case-insensitive)
+    List<Account> findByAccountNumberContainingIgnoreCase(String accountNumber);
 
-    List<Account> findByCustomerId(Long customerId);
-
-    List<Account> findByAccountStatus(Account.AccountStatus status);
-
-    @Query("SELECT a FROM Account a WHERE LOWER(a.accountNumber) LIKE LOWER(CONCAT('%', :search, '%'))")
-    List<Account> searchByAccountNumber(@Param("search") String search);
-
-    boolean existsByAccountNumber(String accountNumber);
+    // Find accounts by customer IDs
+    List<Account> findByCustomerIdIn(List<Long> customerIds);
 
 }

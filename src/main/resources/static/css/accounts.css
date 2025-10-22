@@ -1,64 +1,154 @@
-/* Shared styling for accounts list + edit form pages */
+/* Account-specific styles */
 
-:root {
-    --border:#ddd;
-    --border-dark:#333;
-    --bg-head:#f5f5f5;
-    --btn-bg:#fafafa;
-    --muted:#666;
-    --ok-bg:#e8f5e9;
-    --ok-border:#4caf50;
-    --ok-text:#2e7d32;
-    --warn:#b71c1c;
+/* Status badges */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
 }
 
-/* Layout helpers */
-.header-row {
-    display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
-}
-.header-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.content-header { display:flex; justify-content:space-between; align-items:center; }
-
-/* Messages */
-.msg {
-    padding:10px; margin:10px 0; border-radius:6px;
-    background:var(--ok-bg); border:1px solid var(--ok-border); color:var(--ok-text);
+.status-open {
+    background-color: #d4edda;
+    color: #155724;
 }
 
-/* Buttons */
-.btn {
-    display:inline-block; padding:8px 12px; border:1px solid var(--border-dark);
-    border-radius:6px; background:var(--btn-bg); cursor:pointer; text-decoration:none;
-}
-.btn.warn { border-color: var(--warn); color: var(--warn); }
-button.btn:disabled, .btn[disabled] {
-    background:#eee; color:#999; cursor:not-allowed; border-color:#bbb;
+.status-frozen {
+    background-color: #fff3cd;
+    color: #856404;
 }
 
-/* Tables */
-table.data-table { width:100%; border-collapse:collapse; margin-top:1rem; }
-.data-table th, .data-table td { border:1px solid var(--border); padding:8px; text-align:left; }
-.data-table th { background:var(--bg-head); }
-tr.highlight { background:#fff8dc; }
-.actions-cell .btn { margin-right:6px; }
-.inline-form { display:inline; }
-
-/* Filter form */
-.filter { display:flex; gap:8px; align-items:center; }
-.filter input {
-    padding:6px 8px; border:1px solid #ccc; border-radius:6px;
+.status-closed {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
-/* Card + form */
-.card { max-width: 720px; background:#fff; border:1px solid #eee; border-radius:10px; padding:18px; }
-label { display:block; margin-top:1rem; font-weight:600; }
-input, select { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:8px; }
-.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-.muted { color:var(--muted); font-size:12px; margin-top:4px; }
-.actions { margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; }
+/* Action buttons */
+.action-buttons {
+    white-space: nowrap;
+}
 
-/* Small responsive tweak */
-@media (max-width: 720px) {
-    .grid-2 { grid-template-columns: 1fr; }
-    .actions-cell .btn { margin-bottom:6px; }
+.btn-action {
+    padding: 6px 12px;
+    margin: 0 2px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    width: 90px;  /* Changed: fixed width for all buttons */
+    text-align: center;
+}
+
+.btn-freeze {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.btn-freeze:hover {
+    background-color: #e0a800;
+}
+
+/* ADDED: Unfreeze button styling */
+.btn-unfreeze {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-unfreeze:hover {
+    background-color: #218838;
+}
+
+.btn-close {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-close:hover {
+    background-color: #5a6268;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* Create account form */
+.create-account-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-group button[type="submit"] {
+    margin-top: auto;
+}
+
+/* Alert styling */
+.alert {
+    padding: 12px 20px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .create-account-form {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .btn-action {
+        width: 100%;
+    }
 }
