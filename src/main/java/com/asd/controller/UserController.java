@@ -83,7 +83,12 @@ public class UserController {
         // 🔑 Hash password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        users.save(user);
+        User saved = users.save(user);
+        Integer currentId = (Integer) session.getAttribute("userId");
+        User actor = (currentId != null) ? users.getReferenceById(currentId) : null;
+        UUID resourceUuid = UUID.nameUUIDFromBytes(("USER:" + saved.getId()).getBytes());
+        auditService.recordAction(actor, Action.CREATE, ResourceType.USER, resourceUuid);
+
         redirectAttributes.addAttribute("msg", "User created successfully!");
         return "redirect:/users";
     }
