@@ -30,7 +30,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         return transactions.stream()
                 .filter(t -> (search == null || search.isEmpty()
-                        || t.getCustomer().getName().toLowerCase().contains(search.toLowerCase())
+                        || t.getCustomer().getFull_name().toLowerCase().contains(search.toLowerCase())
                         || String.valueOf(t.getId()).contains(search)))
                 .map(this::mapToTransactionData)
                 .collect(Collectors.toList());

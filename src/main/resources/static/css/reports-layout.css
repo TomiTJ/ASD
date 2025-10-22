@@ -46,13 +46,67 @@
     height: 600px;
     overflow-y: auto;
 }
+input{
 
-
-
-#search{
     width: 100%;
     background-color: #F3F3F5;
     color: #717182;
+    border: #E5E5E5;
+    height: 30px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+.btn-container > div{
+    padding: 10px;
+}
+
+label {
+    font-size: 14px;
+}
+select{
+
+    width: 100%;
+    background-color: #F3F3F5;
+    border: #E5E5E5;
+    height: 35px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    background-color: #F3F3F5;
+    color: #000000;
+    border: #E5E5E5;
+    height: 35px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+button:hover {
+    background-color: #E5E5E5;
+}
+
+.date-range {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.date-range > div{
+    width: 100%;
+}
+
+
+.input-field{
+    width: 100%;
+    background-color: #F3F3F5;
     border: #E5E5E5;
     height: 17px;
     padding: 5px;
@@ -75,13 +129,4 @@ h4{
     padding: 10px;
     font-family: 'Lato Semibold', sans-serif;
 }
-table {
-    font-size: 13px;
-    width: 100%;
-    text-align: left;
-    border-collapse: collapse;
-}
-td, th {
-    border-bottom: 1px solid #E5E5E5;
-    padding: 5px;
-}
+
