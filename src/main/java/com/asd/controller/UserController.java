@@ -1,7 +1,10 @@
 package com.asd.controller;
 
+import com.asd.model.Action;
+import com.asd.model.ResourceType;
 import com.asd.model.User;
 import com.asd.repository.UserRepository;
+import com.asd.services.AuditService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -9,16 +12,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.UUID;
+
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
     private final UserRepository users;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
-    public UserController(UserRepository users, PasswordEncoder passwordEncoder) {
+
+    public UserController(UserRepository users, PasswordEncoder passwordEncoder, AuditService auditService) {
         this.users = users;
         this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
     }
 
     /** Guard: must be logged-in ADMIN. Return a redirect string if blocked; otherwise null. */
@@ -137,8 +145,21 @@ public class UserController {
             return "redirect:/users";
         }
 
-        users.deleteById(id);
-        redirectAttributes.addAttribute("msg", "User deleted successfully!");
+        // Soft delete to keep audit FK safe
+        User target = users.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id: " + id));
+        target.setStatus(User.Status.INACTIVE);
+        users.save(target);
+
+        // Who did it?
+        User actor = (currentId != null) ? users.getReferenceById(currentId) : null;
+
+        // What resource was affected?
+        UUID resourceUuid = UUID.nameUUIDFromBytes(("USER:" + id).getBytes());
+
+        auditService.recordAction(actor, Action.DELETE, ResourceType.USER, resourceUuid);
+
+        redirectAttributes.addAttribute("msg", "User deactivated successfully!");
         return "redirect:/users";
     }
 }
