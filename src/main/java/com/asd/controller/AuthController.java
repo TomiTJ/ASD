@@ -61,7 +61,17 @@ public class AuthController {
     // POST /logout: clear session
     @PostMapping("/logout")
     public String doLogout(HttpSession session) {
+
+        Integer actorId = (Integer) session.getAttribute("userId");
+        if (actorId != null) {
+            var actor = users.getReferenceById(actorId);
+            auditService.recordAction(actor, Action.LOGOUT, ResourceType.USER, java.util.UUID.randomUUID());
+        }
+
         session.invalidate();
+
+
+
         return "redirect:/login?logout";
     }
 }
