@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TransactionService {
     List<TransactionDto> findallTransactions();
-    List<TransactionDto> findFilteredTransactions(String search);
+    List<TransactionDto> findFilteredTransactions(String search, String type, String status);
 
 }
 

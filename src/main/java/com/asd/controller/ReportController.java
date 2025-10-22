@@ -33,9 +33,14 @@ public class ReportController {
     @GetMapping("/reports")
     public String showTransactions(HttpSession session, Model model) {
         Object userId = session.getAttribute("userId");
+        Object userName = session.getAttribute("userName");
+        Object userRole = session.getAttribute("userRole");
         if (userId == null) {
             return "redirect:/login";
         }
+
+        model.addAttribute("userName",userName );
+        model.addAttribute("userRole",userRole );
         return "reports";
     }
 

@@ -21,7 +21,7 @@ public class ReportServiceImpl implements ReportService {
     private final TransactionService transactionService;
     private final AccountRepository accountRepository;
 
-    public ReportServiceImpl(TransactionRepository transactionRepository, TransactionService transactionService, AccountRepository accountRepository) {
+    public ReportServiceImpl(TransactionService transactionService, AccountRepository accountRepository) {
         this.transactionService = transactionService;
         this.accountRepository = accountRepository;
     }

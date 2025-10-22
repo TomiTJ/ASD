@@ -25,13 +25,31 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> findFilteredTransactions(String search) {
+    public List<TransactionDto> findFilteredTransactions(String search, String type, String status) {
         List<Transaction> transactions = transactionRepository.findAll();
 
+        String keyword = (search == null) ? "" : search.trim().toLowerCase();
+        String typeFilter = (type == null) ? "" : type.trim().toUpperCase();
+        String statusFilter = (status == null) ? "" : status.trim().toUpperCase();
+
         return transactions.stream()
-                .filter(t -> (search == null || search.isEmpty()
-                        || t.getCustomer().getFull_name().toLowerCase().contains(search.toLowerCase())
-                        || String.valueOf(t.getId()).contains(search)))
+                .filter(t -> {
+                    String customerName = t.getCustomer() != null ? t.getCustomer().getFull_name().toLowerCase() : "";
+                    String transactionId = String.valueOf(t.getId());
+                    String transactionType = t.getType() != null ? t.getType().name() : "";
+                    String transactionStatus = t.getStatus() != null ? t.getStatus().name() : "";
+                    boolean matchesSearch = keyword.isEmpty()
+                            || customerName.contains(keyword)
+                            || transactionId.contains(keyword);
+
+                    boolean matchesType = typeFilter.isEmpty()
+                            || transactionType.equals(typeFilter);
+
+                    boolean matchesStatus = statusFilter.isEmpty()
+                            || transactionStatus.equals(statusFilter);
+
+                    return matchesSearch && matchesType && matchesStatus;
+                })
                 .map(this::mapToTransactionData)
                 .collect(Collectors.toList());
     }

@@ -29,14 +29,15 @@ class TransactionControllerTests {
     //void testNonEmptyDownload() throws IOException {
     //}
 
+
     @Test
     void testEmptyDownload() throws IOException {
-        when(transactionService.findFilteredTransactions(anyString()))
+        when(transactionService.findFilteredTransactions(anyString(), anyString(), anyString()))
                 .thenReturn(List.of());
 
         RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
 
-        String result = controller.handleDownloadRequest("search", redirectAttributes);
+        String result = controller.handleDownloadRequest("search", "type", "status", redirectAttributes);
 
         assertEquals("redirect:/transactions", result);
 
@@ -44,4 +45,5 @@ class TransactionControllerTests {
         assertTrue(redirectAttributes.getFlashAttributes().containsKey("errorMessage"));
 
     }
+
 }

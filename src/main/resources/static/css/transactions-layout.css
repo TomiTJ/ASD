@@ -70,6 +70,14 @@
     outline: none;
 }
 
+select {
+    background-color: #F3F3F5;
+    border: #F3F3F5;
+    padding: 5px;
+    border-radius: 5px;
+    outline: none;
+}
+
 h4{
     margin: 0;
     padding: 10px;

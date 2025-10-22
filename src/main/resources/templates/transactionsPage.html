@@ -20,7 +20,12 @@
         <div class="main-content-container">
             <div class="heading-container"><h4>Transaction Monitoring</h4>
                 <div>
-                    <a th:href="@{/transactions/download(search=${param.search})}"><button class="btn-style"><label>Export CSV</label></button></a>
+                    <a th:href="@{/transactions/download(
+                            search=${param.search},
+                            type=${param.type},
+                            status=${param.status})}">
+                        <button class="btn-style"><label>Export CSV</label></button>
+                    </a>
                     <div th:if="${errorMessage}" class="alert" th:text="${errorMessage}"></div>
                 </div>
             </div>
@@ -30,6 +35,22 @@
                 <form th:action="@{/transactions}" method="get">
                 <div class="search-filter-items">
                     <div><input type="text" id="search" name="search" placeholder="Search by customer or transaction ID "></div>
+                    <div>
+                        <select name="type">
+                            <option value="">All Types</option>
+                            <option value="deposit">Deposit</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="withdrawal">Withdrawal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select name="status">
+                            <option value="">All Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
                     <div><button class="btn-style" type="submit">Apply Filters</button></div>
                 </div>
                 </form>
@@ -40,7 +61,6 @@
                     <tr>
                         <th>Transaction ID</th>
                         <th>Customer</th>
-                        <th>Account</th>
                         <th>Type</th>
                         <th>Amount</th>
                         <th>Status</th>
@@ -50,7 +70,6 @@
                     <tr th:each="transaction : ${transactions}">
                         <td th:text="${transaction.id}"></td>
                         <td th:text="${transaction.getCustomer().getFull_name()}"></td>
-                        <td>[TBA]</td>
                         <td th:text="${transaction.getType()}"></td>
                         <td th:text="'$' + ${transaction.getAmount()}"></td>
                         <td th:text="${transaction.getStatus()}"></td>

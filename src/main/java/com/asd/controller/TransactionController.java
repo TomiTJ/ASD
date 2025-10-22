@@ -35,15 +35,20 @@ public class TransactionController {
 
 
     @GetMapping("/transactions")
-    public String showTransactions(@RequestParam(required = false) String search, HttpSession session, Model model) {
+    public String showTransactions(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "") String type,
+            @RequestParam(required = false, defaultValue = "") String status,
+            HttpSession session,
+            Model model) {
         Object userId = session.getAttribute("userId");
         Object userName = session.getAttribute("userName");
         Object userRole = session.getAttribute("userRole");
         if (userId == null) {
             return "redirect:/login";
         }
-        if (search != null) {
-            List<TransactionDto> transactions = transactionService.findFilteredTransactions(search);
+        if (search != null || type != null || status != null) {
+            List<TransactionDto> transactions = transactionService.findFilteredTransactions(search, type, status);
             model.addAttribute("transactions", transactions);
         }
         else {
@@ -56,8 +61,12 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions/download")
-    public String handleDownloadRequest(@RequestParam(required = false) String search, RedirectAttributes redirectAttributes) throws IOException {
-        List<TransactionDto> transactions = transactionService.findFilteredTransactions(search);
+    public String handleDownloadRequest(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "") String type,
+            @RequestParam(required = false, defaultValue = "") String status,
+            RedirectAttributes redirectAttributes) throws IOException {
+        List<TransactionDto> transactions = transactionService.findFilteredTransactions(search, type, status);
 
         //If transactions is empty throw error message.
         if (transactions.isEmpty()) {
@@ -65,13 +74,19 @@ public class TransactionController {
             return "redirect:/transactions";
         }
         else {
-            return "redirect:/transactions/download/file?search=" + search;
+            return "redirect:/transactions/download/file"
+                    + "?search=" + (search != null ? search : "")
+                    + "&type=" + (type != null ? type : "")
+                    + "&status=" + (status != null ? status : "");
         }
     }
 
     @GetMapping("/transactions/download/file")
-    public ResponseEntity<Resource> downloadCSV(@RequestParam(required = false) String search) throws IOException {
-        List<TransactionDto> transactions = transactionService.findFilteredTransactions(search);
+    public ResponseEntity<Resource> downloadCSV(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String status) throws IOException {
+        List<TransactionDto> transactions = transactionService.findFilteredTransactions(search, type, status);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(outputStream), CSVFormat.DEFAULT);
