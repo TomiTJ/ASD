@@ -1,9 +1,37 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
 - master
 
 pool:
   vmImage: ubuntu-latest
 
+steps:
+- task: JavaToolInstaller@1
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- script: java -version
+  displayName: 'Check Java version'
+
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.17'
+    jdkArchitectureOption: 'x64'
+    goals: 'clean test'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+
+
+# added test db on pipeline to run tests ( uses application-test.properties)
 services:
   postgres:
     image: postgres:14
@@ -14,45 +42,3 @@ services:
     ports:
       - 5432:5432
 
-steps:
-- task: JavaToolInstaller@1
-  displayName: 'Install JDK 21'
-  inputs:
-    versionSpec: '21'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
-
-- script: |
-    sudo apt-get update
-    sudo apt-get install -y maven
-  displayName: 'Install Maven'
-
-- script: |
-    java -version
-    mvn -version
-  displayName: 'Show tool versions'
-
-- task: Maven@4
-  displayName: 'Build & Test'
-  inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'clean package'
-    mavenOptions: '-Xmx3072m -B'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.21'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-
-- script: |
-    echo "Scanning for built jars under $(System.DefaultWorkingDirectory)"
-    find "$(System.DefaultWorkingDirectory)" -type f -name '*.jar' -maxdepth 6 -print
-  displayName: 'Locate built JARs'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish JAR(s)'
-  inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-  condition: succeeded()
