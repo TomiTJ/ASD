@@ -1,18 +1,11 @@
-
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>Create User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create New User</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <style>
-        .content-header { display:flex; justify-content:space-between; align-items:center; }
-        .card { max-width: 640px; background:#fff; border:1px solid #eee; border-radius:10px; padding:18px; }
-        label { display:block; margin-top:1rem; font-weight:600; }
-        input, select { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:8px; }
-        .actions { margin-top:1rem; display:flex; gap:10px; }
-        .btn { padding:8px 12px; border:1px solid #333; border-radius:6px; background:#fafafa; cursor:pointer; text-decoration:none; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/users.css}">
 </head>
 <body>
 <div class="main-layout">
@@ -27,46 +20,116 @@
     <div th:replace="fragments/navbar2 :: navbar2"></div>
 
     <div class="main-content-container">
-        <div class="content-header">
-            <h2>Create User</h2>
-            <a class="btn" th:href="@{/users}">← Back to Users</a>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2>Create New User</h2>
+            <a class="btn btn-secondary" th:href="@{/users}">
+                ← Back to Users
+            </a>
         </div>
 
-        <div class="card">
-            <form th:action="@{/users/create}" th:object="${user}" method="post">
-                <label>Full Name</label>
-                <input type="text" th:field="*{fullName}" required>
+        <!-- Form Container -->
+        <div class="form-container">
+            <div class="form-card">
+                <form th:action="@{/users/create}" th:object="${user}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            th:field="*{fullName}" 
+                            placeholder="Enter full name"
+                            required
+                            autofocus>
+                        <div class="form-help">The user's complete name</div>
+                    </div>
 
-                <label>Email</label>
-                <input type="email" th:field="*{email}" required>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            th:field="*{email}" 
+                            placeholder="user@example.com"
+                            required>
+                        <div class="form-help">This will be used for login</div>
+                    </div>
 
-                <label>Password</label>
-                <input type="password" th:field="*{password}" required>
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            th:field="*{password}" 
+                            placeholder="Enter secure password"
+                            required
+                            minlength="6">
+                        <div class="form-help">Minimum 6 characters required</div>
+                    </div>
 
-                <label>Role</label>
-                <select th:field="*{role}">
-                    <option th:value="ADMIN">ADMIN</option>
-                    <option th:value="READ_ONLY">READ_ONLY</option>
-                </select>
+                    <div class="form-group">
+                        <label for="role">User Role *</label>
+                        <select id="role" th:field="*{role}" required>
+                            <option value="">Select a role</option>
+                            <option th:value="ADMIN">Administrator - Full access to all features</option>
+                            <option th:value="READ_ONLY">Read Only - View-only access</option>
+                        </select>
+                        <div class="form-help">Determines what the user can access</div>
+                    </div>
 
-                <label>Status</label>
-                <select th:field="*{status}">
-                    <option th:value="ACTIVE">ACTIVE</option>
-                    <option th:value="DEACTIVATED">DEACTIVATED</option>
-                </select>
+                    <div class="form-group">
+                        <label for="status">Account Status *</label>
+                        <select id="status" th:field="*{status}" required>
+                            <option value="">Select status</option>
+                            <option th:value="ACTIVE" selected>Active - User can login</option>
+                            <option th:value="DEACTIVATED">Deactivated - User cannot login</option>
+                        </select>
+                        <div class="form-help">Active users can access the system</div>
+                    </div>
 
-                <div class="actions">
-                    <button class="btn" type="submit">Create</button>
-                    <a class="btn" th:href="@{/users}">Cancel</a>
-                </div>
-            </form>
+                    <div class="form-actions">
+                        <a class="btn btn-secondary" th:href="@{/users}">Cancel</a>
+                        <button class="btn btn-primary" type="submit">
+                            ✓ Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <div class="footer"></div>
 </div>
+
+<script>
+    // Form validation feedback
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input[required], select[required]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('invalid', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#c62828';
+        });
+        
+        input.addEventListener('input', function() {
+            this.style.borderColor = '#e0e0e0';
+        });
+    });
+
+    // Password strength indicator
+    const passwordInput = document.getElementById('password');
+    passwordInput.addEventListener('input', function() {
+        const strength = this.value.length;
+        if (strength < 6) {
+            this.style.borderColor = '#c62828';
+        } else if (strength < 10) {
+            this.style.borderColor = '#ff9800';
+        } else {
+            this.style.borderColor = '#4caf50';
+        }
+    });
+</script>
 </body>
 </html>
-
-
-
