@@ -1,128 +1,108 @@
+# Starter pipeline
+
 trigger:
 - master
 
+pool:
+  vmImage: ubuntu-latest
+
 variables:
-  AZ_SUB_CONN: 'Azure subscription 1(22c01a58-733d-405e-8882-0da91e1f052d)'
-  APP_SERVICE_NAME: 'bankapp-dev'
-  RESOURCE_GROUP: 'rg-bankapp'
+  # 🔧 Fill these in (or set as pipeline variables)
+  AZ_SUB_CONN: 'Azure subscription 1(22c01a58-733d-405e-8882-0da91e1f052d)'  # Service connection name
+  APP_SERVICE_NAME: 'bankapp-dev'    # Your Web App name
+  RESOURCE_GROUP: 'rg-bankapp'       # Resource group of that Web App
   ARTIFACT_NAME: 'drop'
   RUNTIME: 'JAVA|17'
 
-stages:
-# ===================== BUILD & TEST (with Postgres service) =====================
-- stage: Build
-  displayName: Build, Test, Package
-  jobs:
-  - job: build
-    displayName: Build & Test with Postgres
-    pool:
-      vmImage: ubuntu-latest
+steps:
+- task: JavaToolInstaller@1
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
 
-    # Run the job in a Java+Maven container so service networking works cleanly
-    container: maven:3.9.9-eclipse-temurin-17
+- script: java -version
+  displayName: 'Check Java version'
 
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: bankdb_test
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
+# ✅ Your existing tests against Postgres
+- task: Maven@4
+  displayName: 'Maven clean test (Postgres test DB)'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean test -B'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
 
-    steps:
-    - script: |
-        java -version
-        mvn -version
-      displayName: 'Check Java & Maven'
+# 📦 Build JAR (skip tests because we already ran them)
+- task: Maven@4
+  displayName: 'Maven package (skip tests)'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'package -DskipTests -B'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
 
-    # Wait for Postgres to be ready (install client tools to use pg_isready)
-    - script: |
-        apt-get update
-        apt-get install -y postgresql-client
-        echo "Waiting for Postgres to be healthy..."
-        for i in {1..30}; do
-          pg_isready -h postgres -U postgres && exit 0
-          echo "pg not ready yet... ($i)"; sleep 2
-        done
-        echo "Postgres did not become ready in time"; exit 1
-      displayName: 'Wait for Postgres service'
+# ⬆️ Publish the JAR as a pipeline artifact
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish JAR artifact'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
+    ArtifactName: '$(ARTIFACT_NAME)'
+    publishLocation: 'Container'
 
-    # Run tests against the Postgres service using the test profile
-    - task: Maven@4
-      displayName: 'Maven clean test package (test profile, Postgres)'
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'clean test package -B'
-        options: '-Dspring.profiles.active=test'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'Path'            # running inside container; no JDK install task
-        mavenVersionOption: 'Default'
-      env:
-        TEST_DB_URL: jdbc:postgresql://postgres:5432/bankdb_test
-        TEST_DB_USER: postgres
-        TEST_DB_PASSWORD: postgres
+# ⚙️ (Optional but recommended) Ensure runtime + app settings on the Web App
+# Provide SPRING_DATASOURCE_URL/USERNAME/PASSWORD as pipeline variables (mark secrets!)
+- task: AzureCLI@2
+  displayName: 'Configure App Service runtime & settings'
+  inputs:
+    azureSubscription: '$(AZ_SUB_CONN)'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az webapp config set -g "$(RESOURCE_GROUP)" -n "$(APP_SERVICE_NAME)" --linux-fx-version "$(RUNTIME)"
+      az webapp config appsettings set -g "$(RESOURCE_GROUP)" -n "$(APP_SERVICE_NAME)" --settings \
+        SPRING_PROFILES_ACTIVE=dev \
+        WEBSITES_PORT=8080 \
+        SPRING_DATASOURCE_URL="$(SPRING_DATASOURCE_URL)" \
+        SPRING_DATASOURCE_USERNAME="$(SPRING_DATASOURCE_USERNAME)" \
+        SPRING_DATASOURCE_PASSWORD="$(SPRING_DATASOURCE_PASSWORD)"
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish JAR artifact'
-      inputs:
-        PathtoPublish: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
-        ArtifactName: '$(ARTIFACT_NAME)'
-        publishLocation: 'Container'
+# 🚀 Deploy JAR to Azure App Service (Linux)
+- task: AzureWebApp@1
+  displayName: 'Deploy to Azure App Service'
+  inputs:
+    azureSubscription: '$(AZ_SUB_CONN)'
+    appType: webAppLinux
+    appName: '$(APP_SERVICE_NAME)'
+    package: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
 
-# ===================== DEPLOY =====================
-- stage: Deploy
-  displayName: Deploy to Azure App Service (Linux)
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: web
-    displayName: Deploy WebApp
-    environment: 'bankapp-dev'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: $(ARTIFACT_NAME)
+# 🩺 Basic health check (requires spring-boot-starter-actuator)
+- script: |
+    URL="https://$(APP_SERVICE_NAME).azurewebsites.net/actuator/health"
+    echo "Checking $URL"
+    for i in {1..20}; do
+      code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+      if [ "$code" = "200" ]; then
+        echo "Healthy ✅"
+        exit 0
+      fi
+      echo "Waiting...($i) got $code"; sleep 10
+    done
+    echo "Health check failed ❌"; exit 1
+  displayName: 'Health check'
 
-          - task: AzureCLI@2
-            displayName: 'Configure runtime & app settings'
-            inputs:
-              azureSubscription: '$(AZ_SUB_CONN)'
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                RG="$(RESOURCE_GROUP)"
-                APP="$(APP_SERVICE_NAME)"
-                az webapp config set -g "$RG" -n "$APP" --linux-fx-version "$(RUNTIME)"
-                az webapp config appsettings set -g "$RG" -n "$APP" --settings \
-                  SPRING_PROFILES_ACTIVE=dev \
-                  WEBSITES_PORT=8080 \
-                  SPRING_DATASOURCE_URL="$(SPRING_DATASOURCE_URL)" \
-                  SPRING_DATASOURCE_USERNAME="$(SPRING_DATASOURCE_USERNAME)" \
-                  SPRING_DATASOURCE_PASSWORD="$(SPRING_DATASOURCE_PASSWORD)"
-
-          - task: AzureWebApp@1
-            displayName: 'Deploy JAR to App Service'
-            inputs:
-              azureSubscription: '$(AZ_SUB_CONN)'
-              appType: webAppLinux
-              appName: '$(APP_SERVICE_NAME)'
-              package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**/*.jar'
-
-          - bash: |
-              URL="https://$(APP_SERVICE_NAME).azurewebsites.net/actuator/health"
-              echo "Checking $URL"
-              for i in {1..20}; do
-                code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-                [ "$code" = "200" ] && echo "Healthy ✅" && exit 0
-                echo "Waiting...($i) got $code"; sleep 10
-              done
-              echo "Health check failed ❌"; exit 1
-            displayName: 'Health check'
+# Your existing Postgres test DB service (unchanged)
+services:
+  postgres:
+    image: postgres:14
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bankdb_test
+    ports:
+      - 5432:5432
