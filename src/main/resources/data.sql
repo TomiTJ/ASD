@@ -17,17 +17,66 @@ CREATE TABLE users (
                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seed known-good users with BCrypt hashed passwords
+-- Seed users with BCrypt hashed passwords (all passwords are "password")
 INSERT INTO users (full_name, email, password, role, status)
 VALUES
-
     ('Admin User', 'admin@bank.local',
      '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
      'ADMIN', 'ACTIVE'),
 
     ('Viewer User', 'viewer@bank.local',
      '$2a$10$677L7hf55cMtzXGAuYJC0eEirNc1uJyXWstQ9U1NdTCHm9wOAZf9W',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('Lesandu Perera','lesandu@gmail.com',
+     '$2a$10$2xkrtEB9v3mK/Oy/5teF8OHoqzRZjYuuBI37OW0Tn7EkBTHlPxaa6',
+     'ADMIN','ACTIVE'),
+
+    ('Sarah Johnson', 'sarah.johnson@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'ADMIN', 'ACTIVE'),
+
+    ('Michael Chen', 'michael.chen@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('Emma Wilson', 'emma.wilson@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('James Martinez', 'james.martinez@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'ADMIN', 'ACTIVE'),
+
+    ('Olivia Brown', 'olivia.brown@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('William Davis', 'william.davis@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'DEACTIVATED'),
+
+    ('Sophia Garcia', 'sophia.garcia@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'ADMIN', 'ACTIVE'),
+
+    ('Liam Anderson', 'liam.anderson@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('Ava Taylor', 'ava.taylor@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'READ_ONLY', 'ACTIVE'),
+
+    ('Noah Thomas', 'noah.thomas@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     'ADMIN', 'DEACTIVATED'),
+
+    ('Isabella Moore', 'isabella.moore@bank.local',
+     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
      'READ_ONLY', 'ACTIVE');
+
+
 
 
 -- Customers table
@@ -206,3 +255,4 @@ CREATE INDEX idx_joint_accounts_account_id
 
 CREATE INDEX idx_joint_accounts_customer_id
     ON joint_accounts(customer_id);
+
