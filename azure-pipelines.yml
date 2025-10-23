@@ -1,111 +1,44 @@
+# Starter pipeline
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
 - master
 
-variables:
-  AZ_SUB_CONN: 'Azure subscription 1(22c01a58-733d-405e-8882-0da91e1f052d)'  # service connection name
-  RESOURCE_GROUP: 'rg-bankapp'
-  APP_SERVICE_NAME: 'bankapp-dev'
-  RUNTIME: 'JAVA|21'
-  ARTIFACT_NAME: 'drop'
+pool:
+  vmImage: ubuntu-latest
 
-stages:
-# ===================== BUILD & TEST =====================
-- stage: Build
-  displayName: Build, Test, Publish
-  jobs:
-  - job: build
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - task: JavaToolInstaller@1
-      displayName: 'Install JDK 21'
-      inputs:
-        versionSpec: '21'
-        jdkArchitectureOption: 'x64'
-        jdkSourceOption: 'PreInstalled'
+steps:
+- task: JavaToolInstaller@1
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
 
-    # Optional: install Maven explicitly (keeps things predictable)
-    - script: |
-        sudo apt-get update
-        sudo apt-get install -y maven
-        java -version
-        mvn -version
-      displayName: 'Install tools'
+- script: java -version
+  displayName: 'Check Java version'
 
-    - task: Maven@4
-      displayName: 'Maven clean test package'
-      inputs:
-        mavenPomFile: 'pom.xml'               # change if pom.xml is in a subfolder
-        goals: 'clean test package -B'        # -B = batch mode
-        mavenOptions: '-Xmx3072m'             # JVM opts only
-        options: '-Dspring.profiles.active=test'  # ensure test profile if needed
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.21'
-        jdkArchitectureOption: 'x64'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish JAR artifact(s)'
-      inputs:
-        PathtoPublish: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
-        ArtifactName: '$(ARTIFACT_NAME)'
-        publishLocation: 'Container'
+# added test db on pipeline to run tests ( uses application-test.properties)
+services:
+  postgres:
+    image: postgres:14
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bankdb_test
+    ports:
+      - 5432:5432
 
-# ===================== DEPLOY =====================
-- stage: Deploy
-  displayName: Deploy to Azure App Service (Linux)
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: web
-    environment: 'bankapp-dev'      # optional DevOps environment (approvals, etc.)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: $(ARTIFACT_NAME)
-
-          # (Once per app usually, but safe to repeat) set runtime + app settings
-          - task: AzureCLI@2
-            displayName: 'Configure runtime & app settings'
-            inputs:
-              azureSubscription: '$(AZ_SUB_CONN)'
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                RG=$(RESOURCE_GROUP)
-                APP=$(APP_SERVICE_NAME)
-
-                # Set Java runtime
-                az webapp config set -g "$RG" -n "$APP" --linux-fx-version "$(RUNTIME)"
-
-                # Map Spring env vars (configure these as secret variables or use Key Vault)
-                az webapp config appsettings set -g "$RG" -n "$APP" --settings \
-                  SPRING_PROFILES_ACTIVE=dev \
-                  SPRING_DATASOURCE_URL="$(SPRING_DATASOURCE_URL)" \
-                  SPRING_DATASOURCE_USERNAME="$(SPRING_DATASOURCE_USERNAME)" \
-                  SPRING_DATASOURCE_PASSWORD="$(SPRING_DATASOURCE_PASSWORD)" \
-                  WEBSITES_PORT=8080
-
-          # Deploy the built JAR
-          - task: AzureWebApp@1
-            displayName: 'Deploy JAR to App Service'
-            inputs:
-              azureSubscription: '$(AZ_SUB_CONN)'
-              appType: webAppLinux
-              appName: '$(APP_SERVICE_NAME)'
-              package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**/*.jar'
-
-          # Simple health check
-          - bash: |
-              URL="https://$(APP_SERVICE_NAME).azurewebsites.net/actuator/health"
-              echo "Checking $URL"
-              for i in {1..20}; do
-                code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-                [ "$code" = "200" ] && echo "Healthy" && exit 0
-                echo "Waiting...($i) got $code"; sleep 10
-              done
-              echo "Health check failed"; exit 1
-            displayName: 'Health check'
