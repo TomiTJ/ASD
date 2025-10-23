@@ -33,47 +33,47 @@ VALUES
      'ADMIN','ACTIVE'),
 
     ('Sarah Johnson', 'sarah.johnson@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'ADMIN', 'ACTIVE'),
 
     ('Michael Chen', 'michael.chen@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE'),
 
     ('Emma Wilson', 'emma.wilson@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE'),
 
     ('James Martinez', 'james.martinez@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'ADMIN', 'ACTIVE'),
 
     ('Olivia Brown', 'olivia.brown@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE'),
 
     ('William Davis', 'william.davis@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'DEACTIVATED'),
 
     ('Sophia Garcia', 'sophia.garcia@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'ADMIN', 'ACTIVE'),
 
     ('Liam Anderson', 'liam.anderson@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE'),
 
     ('Ava Taylor', 'ava.taylor@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE'),
 
     ('Noah Thomas', 'noah.thomas@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'ADMIN', 'DEACTIVATED'),
 
     ('Isabella Moore', 'isabella.moore@bank.local',
-     '$2a$10$AbmIMwdw24zABHae0Edc5egtFfOJgwELfe7/Tzua5SnJSdrgQNBnC',
+     '$2y$10$CS2YKFwJdTFGEyk6Am8naOnHHxaMsG58wAWNWW5CaGsOorcpl3kM2',
      'READ_ONLY', 'ACTIVE');
 
 
