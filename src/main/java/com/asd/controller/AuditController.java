@@ -10,7 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Controller
@@ -37,15 +38,23 @@ public class AuditController {
     @ResponseBody
     public ResponseEntity<List<AuditDto>> getAudits(
             HttpSession session,
-            @RequestParam(required = false) Action action,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
+            @RequestParam(required = false) String action, // take as String, parse manually
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
         Integer userId = (session != null) ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            return ResponseEntity.status(401).body(List.of());
+        if (userId == null) return ResponseEntity.status(401).body(List.of());
+
+        Action actionEnum = null;
+        if (action != null && !action.isBlank()) {
+            try { actionEnum = Action.valueOf(action.trim().toUpperCase()); } catch (IllegalArgumentException ignored) {}
         }
-        List<AuditDto> audits = auditService.list(action, from, to);
+
+        ZoneId zone = ZoneId.of("Australia/Sydney");
+        Instant fromTs = (from != null) ? from.atStartOfDay(zone).toInstant() : null;
+        Instant toTs   = (to   != null) ? to.plusDays(1).atStartOfDay(zone).minusNanos(1).toInstant() : null;
+
+        List<AuditDto> audits = auditService.list(actionEnum, fromTs, toTs);
         return ResponseEntity.ok(audits);
     }
 }
