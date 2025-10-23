@@ -1,8 +1,5 @@
-# Starter pipeline
-
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Azure DevOps Pipeline for Bank Admin Application
+# Builds, tests, and deploys to Azure App Service
 
 trigger:
 - master
@@ -10,35 +7,89 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: JavaToolInstaller@1
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+variables:
+  # Maven configuration
+  mavenPomFile: 'pom.xml'
+  jdkVersion: '17'
+  
+  # Azure Web App configuration (UPDATE THESE!)
+  azureSubscription: 'YOUR_AZURE_SERVICE_CONNECTION_NAME'  # Set in Azure DevOps
+  webAppName: 'bank-admin-app'  # Your Azure Web App name
+  
+stages:
+- stage: Build
+  displayName: 'Build and Test'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Maven Project'
+    steps:
+    
+    # Install Java
+    - task: JavaToolInstaller@1
+      displayName: 'Install Java $(jdkVersion)'
+      inputs:
+        versionSpec: '$(jdkVersion)'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+    
+    # Verify Java installation
+    - script: java -version
+      displayName: 'Check Java Version'
+    
+    # Build and test with Maven
+    - task: Maven@4
+      displayName: 'Maven Build and Test'
+      inputs:
+        mavenPomFile: '$(mavenPomFile)'
+        goals: 'clean package'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    
+    # Copy JAR file to staging directory
+    - task: CopyFiles@2
+      displayName: 'Copy JAR to Staging'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+        Contents: '*.jar'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
+    # Publish artifact for deployment
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
 
-- script: java -version
-  displayName: 'Check Java version'
-
-- task: Maven@4
-  inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
-
-# added test db on pipeline to run tests ( uses application-test.properties)
-services:
-  postgres:
-    image: postgres:14
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: bankdb_test
-    ports:
-      - 5432:5432
-
+- stage: Deploy
+  displayName: 'Deploy to Azure'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeployWeb
+    displayName: 'Deploy to Azure App Service'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          
+          # Download build artifact
+          - download: current
+            artifact: drop
+          
+          # Deploy to Azure Web App
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Azure Web App'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              package: '$(Pipeline.Workspace)/drop/*.jar'
+              runtimeStack: 'JAVA|17-java17'
+              startUpCommand: 'java -jar *.jar'
