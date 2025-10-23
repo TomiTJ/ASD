@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/transactions-layout.css}">
     <link rel="stylesheet" th:href="@{/css/accounts.css}">
     <title>Customer Account Management</title>
 </head>
@@ -80,7 +79,14 @@
                         </span>
                     </td>
                     <td class="action-buttons">
-                        <!-- Freeze button - show only if account is OPEN -->
+                        <!-- View Details button (opens modal) -->
+                        <button class="btn-action btn-view"
+                                type="button"
+                                th:onclick="'openAccountModal(' + ${account.id} + ')'">
+                            View Details
+                        </button>
+
+                        <!-- Freeze button -->
                         <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN}"
                               th:action="@{/account/freeze/{id}(id=${account.id})}"
                               method="post"
@@ -88,7 +94,7 @@
                             <button class="btn-action btn-freeze" type="submit">Freeze</button>
                         </form>
 
-                        <!-- ADDED: Unfreeze button - show only if account is FROZEN -->
+                        <!-- Unfreeze button -->
                         <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).FROZEN}"
                               th:action="@{/account/unfreeze/{id}(id=${account.id})}"
                               method="post"
@@ -96,7 +102,7 @@
                             <button class="btn-action btn-unfreeze" type="submit">Unfreeze</button>
                         </form>
 
-                        <!-- Close button - show if account is not already closed -->
+                        <!-- Close button -->
                         <form th:if="${account.accountStatus != T(com.asd.model.Account.AccountStatus).CLOSED}"
                               th:action="@{/account/close/{id}(id=${account.id})}"
                               method="post"
@@ -104,7 +110,7 @@
                             <button class="btn-action btn-close" type="submit">Close</button>
                         </form>
 
-                        <!-- Delete button - show only for admins -->
+                        <!-- Delete button -->
                         <form th:if="${userRole == 'ADMIN'}"
                               th:action="@{/account/delete/{id}(id=${account.id})}"
                               method="post"
@@ -167,5 +173,262 @@
 
     <div class="footer"></div>
 </div>
+
+<!-- Account Details Modal -->
+<div id="accountModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>Account Details</h3>
+            <button class="modal-close" onclick="closeAccountModal()">&times;</button>
+        </div>
+
+        <!-- Notification Banner -->
+        <div id="modalNotification" class="modal-notification"></div>
+
+        <div class="modal-body">
+            <!-- Account Information Section -->
+            <div class="modal-section">
+                <h4>Account Information</h4>
+                <form id="updateAccountForm">
+                    <input type="hidden" id="modal-account-id">
+
+                    <div class="form-grid">
+                        <div class="form-group-modal">
+                            <label>Account ID</label>
+                            <input type="text" id="modal-account-id-display" readonly>
+                        </div>
+                        <div class="form-group-modal">
+                            <label>Account Number</label>
+                            <input type="text" id="modal-account-number" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group-modal">
+                            <label>Primary Customer</label>
+                            <input type="text" id="modal-primary-customer" readonly>
+                        </div>
+                        <div class="form-group-modal">
+                            <label>Account Type</label>
+                            <span id="modal-joint-indicator"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group-modal">
+                            <label for="modal-account-category">Account Category</label>
+                            <select id="modal-account-category" required>
+                                <option value="TRANSACTIONAL">Transactional</option>
+                                <option value="SAVINGS">Savings</option>
+                                <option value="CREDIT">Credit</option>
+                                <option value="BUSINESS">Business</option>
+                            </select>
+                        </div>
+                        <div class="form-group-modal">
+                            <label for="modal-account-status">Account Status</label>
+                            <select id="modal-account-status" required>
+                                <option value="OPEN">Open</option>
+                                <option value="FROZEN">Frozen</option>
+                                <option value="CLOSED">Closed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group-modal">
+                            <label for="modal-balance">Balance (AUD)</label>
+                            <input type="number" id="modal-balance" step="0.01" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Joint Account Management Section -->
+            <div class="modal-section">
+                <h4>Joint Account Customers</h4>
+                <div id="joint-customers-container"></div>
+
+                <div class="add-customer-section">
+                    <select id="customer-to-link">
+                        <option value="">Select customer to link...</option>
+                    </select>
+                    <button class="btn-small btn-link-customer" onclick="linkCustomer()">Link Customer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-modal btn-modal-save" onclick="saveAccountChanges()">Save Changes</button>
+            <button class="btn-modal btn-modal-close" onclick="closeAccountModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentAccountId = null;
+
+    function showModalNotification(message, type) {
+        const notification = document.getElementById('modalNotification');
+        notification.textContent = message;
+        notification.className = 'modal-notification show ' + type;
+
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    function hideModalNotification() {
+        const notification = document.getElementById('modalNotification');
+        notification.classList.remove('show');
+    }
+
+    function openAccountModal(accountId) {
+        currentAccountId = accountId;
+        hideModalNotification();
+        fetch('/account/api/detail/' + accountId)
+            .then(response => response.json())
+            .then(data => {
+                populateModal(data);
+                document.getElementById('accountModal').classList.add('active');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load account details');
+            });
+    }
+
+    function closeAccountModal() {
+        document.getElementById('accountModal').classList.remove('active');
+        hideModalNotification();
+        currentAccountId = null;
+    }
+
+    function populateModal(data) {
+        document.getElementById('modal-account-id').value = data.id;
+        document.getElementById('modal-account-id-display').value = data.id;
+        document.getElementById('modal-account-number').value = data.accountNumber;
+        document.getElementById('modal-primary-customer').value = data.primaryCustomerName;
+        document.getElementById('modal-account-category').value = data.accountType;
+        document.getElementById('modal-account-status').value = data.accountStatus;
+        document.getElementById('modal-balance').value = data.balance;
+
+        const indicator = document.getElementById('modal-joint-indicator');
+        if (data.joint) {
+            indicator.innerHTML = '<span class="joint-indicator-badge joint">Joint Account</span>';
+        } else {
+            indicator.innerHTML = '<span class="joint-indicator-badge individual">Individual Account</span>';
+        }
+
+        const container = document.getElementById('joint-customers-container');
+        if (data.jointCustomers && data.jointCustomers.length > 0) {
+            container.innerHTML = '<div class="joint-customers-list">' +
+                data.jointCustomers.map(jc => `
+                    <div class="joint-customer-item">
+                        <div class="customer-info">
+                            <div class="customer-name">${jc.customerName}</div>
+                            <div class="customer-date">Linked: ${jc.linkedDate} at ${jc.linkedTime}</div>
+                        </div>
+                        <button class="btn-small btn-unlink" onclick="unlinkCustomer('${jc.customerId}')">Unlink</button>
+                    </div>
+                `).join('') + '</div>';
+        } else {
+            container.innerHTML = '<div class="empty-state">No joint customers. Add customers below to make it a joint account.</div>';
+        }
+
+        const dropdown = document.getElementById('customer-to-link');
+        dropdown.innerHTML = '<option value="">Select customer to link...</option>' +
+            (data.availableCustomers || []).map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+    }
+
+    function saveAccountChanges() {
+        const accountId = document.getElementById('modal-account-id').value;
+        const formData = new URLSearchParams({
+            accountType: document.getElementById('modal-account-category').value,
+            accountStatus: document.getElementById('modal-account-status').value,
+            balance: document.getElementById('modal-balance').value
+        });
+
+        fetch('/account/api/update/' + accountId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showModalNotification('Account updated successfully!', 'success');
+                    // Reload after a short delay to show the notification
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showModalNotification('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showModalNotification('Failed to update account', 'error');
+            });
+    }
+
+    function linkCustomer() {
+        const customerId = document.getElementById('customer-to-link').value;
+        if (!customerId) {
+            showModalNotification('Please select a customer', 'error');
+            return;
+        }
+
+        fetch('/account/api/link-customer/' + currentAccountId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ customerId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showModalNotification('Customer linked successfully!', 'success');
+                    setTimeout(() => {
+                        openAccountModal(currentAccountId);
+                    }, 1000);
+                } else {
+                    showModalNotification('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showModalNotification('Failed to link customer', 'error');
+            });
+    }
+
+    function unlinkCustomer(customerId) {
+        if (!confirm('Are you sure you want to unlink this customer?')) return;
+
+        fetch('/account/api/unlink-customer/' + currentAccountId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ customerId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showModalNotification('Customer unlinked successfully!', 'success');
+                    setTimeout(() => {
+                        openAccountModal(currentAccountId);
+                    }, 1000);
+                } else {
+                    showModalNotification('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showModalNotification('Failed to unlink customer', 'error');
+            });
+    }
+
+    document.getElementById('accountModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAccountModal();
+    });
+</script>
 </body>
 </html>

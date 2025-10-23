@@ -1,4 +1,5 @@
 -- Drop old tables if they exist
+DROP TABLE IF EXISTS joint_accounts CASCADE;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS customers CASCADE;
 DROP TABLE IF EXISTS audit_event;
@@ -174,3 +175,34 @@ INSERT INTO account (account_number, customer_id, account_type, account_status, 
                                                                                              ('ACC-1000456712', 9, 'BUSINESS',      'OPEN',  78450.00),
                                                                                              ('ACC-1000456713', 10, 'SAVINGS',      'OPEN',   2100.00),
                                                                                              ('ACC-1000456714', 10, 'CREDIT',       'CLOSED',  -120.00);
+-- Create joint_accounts table
+CREATE TABLE IF NOT EXISTS joint_accounts (
+                                              id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                              account_id BIGINT NOT NULL,
+                                              customer_id BIGINT NOT NULL,
+                                              is_joint BOOLEAN NOT NULL DEFAULT TRUE,
+                                              linked_date DATE NOT NULL,
+                                              linked_time TIME NOT NULL,
+
+    -- Foreign key constraints
+                                              CONSTRAINT fk_joint_account
+                                                  FOREIGN KEY (account_id)
+                                                      REFERENCES account(id)
+                                                      ON DELETE CASCADE,
+
+                                              CONSTRAINT fk_joint_customer
+                                                  FOREIGN KEY (customer_id)
+                                                      REFERENCES customers(id)
+                                                      ON DELETE CASCADE,
+
+    -- Ensure no duplicate links
+                                              CONSTRAINT uk_account_customer
+                                                  UNIQUE (account_id, customer_id)
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_joint_accounts_account_id
+    ON joint_accounts(account_id);
+
+CREATE INDEX idx_joint_accounts_customer_id
+    ON joint_accounts(customer_id);

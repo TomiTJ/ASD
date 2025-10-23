@@ -1,18 +1,21 @@
 package com.asd.controller;
 
+import com.asd.dto.AccountDetail;
 import com.asd.dto.AccountDto;
 import com.asd.model.Account;
-import com.asd.model.Customer;
-import com.asd.services.AccountService;
 import com.asd.repository.CustomerRepository;
+import com.asd.services.AccountService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/account")
@@ -26,7 +29,6 @@ public class AccountController {
         this.customerRepository = customerRepository;
     }
 
-    /** Guard: must be logged-in. Return a redirect string if blocked; otherwise null. */
     private String requireLogin(HttpSession session) {
         Object userId = session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
@@ -60,6 +62,109 @@ public class AccountController {
         return "account";
     }
 
+    // API endpoint for modal - Get account details
+    @GetMapping("/api/detail/{id}")
+    @ResponseBody
+    public ResponseEntity<AccountDetail> getAccountDetailApi(@PathVariable Long id, HttpSession session) {
+        String guard = requireLogin(session);
+        if (guard != null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            AccountDetail detail = accountService.getAccountDetail(id);
+            return ResponseEntity.ok(detail);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    // API endpoint for modal - Update account
+    @PostMapping("/api/update/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateAccountApi(@PathVariable Long id,
+                                                                @RequestParam String accountType,
+                                                                @RequestParam String accountStatus,
+                                                                @RequestParam BigDecimal balance,
+                                                                HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String guard = requireLogin(session);
+        if (guard != null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        try {
+            AccountDto dto = new AccountDto();
+            dto.setId(id);
+            dto.setAccountType(Account.AccountType.valueOf(accountType));
+            dto.setAccountStatus(Account.AccountStatus.valueOf(accountStatus));
+            dto.setBalance(balance);
+
+            accountService.updateAccount(dto);
+            response.put("success", true);
+            response.put("message", "Account updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    // API endpoint for modal - Link customer
+    @PostMapping("/api/link-customer/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> linkCustomerApi(@PathVariable Long id,
+                                                               @RequestParam Long customerId,
+                                                               HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String guard = requireLogin(session);
+        if (guard != null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        try {
+            accountService.linkCustomerToAccount(id, customerId);
+            response.put("success", true);
+            response.put("message", "Customer linked successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    // API endpoint for modal - Unlink customer
+    @PostMapping("/api/unlink-customer/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> unlinkCustomerApi(@PathVariable Long id,
+                                                                 @RequestParam Long customerId,
+                                                                 HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String guard = requireLogin(session);
+        if (guard != null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        try {
+            accountService.unlinkCustomerFromAccount(id, customerId);
+            response.put("success", true);
+            response.put("message", "Customer unlinked successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
     @PostMapping("/create")
     public String createAccount(@ModelAttribute AccountDto accountDto,
                                 HttpSession session,
@@ -68,7 +173,6 @@ public class AccountController {
         if (guard != null) return guard;
 
         try {
-            // Generate account number if not provided
             if (accountDto.getAccountNumber() == null || accountDto.getAccountNumber().isEmpty()) {
                 accountDto.setAccountNumber(generateAccountNumber());
             }
@@ -123,7 +227,6 @@ public class AccountController {
         return "redirect:/account";
     }
 
-    // ADDED: Unfreeze endpoint
     @PostMapping("/unfreeze/{id}")
     public String unfreezeAccount(@PathVariable Long id,
                                   HttpSession session,
@@ -182,8 +285,6 @@ public class AccountController {
     }
 
     private String generateAccountNumber() {
-        // Simple account number generation (you can make this more sophisticated)
         return "ACC" + System.currentTimeMillis();
     }
-
 }
