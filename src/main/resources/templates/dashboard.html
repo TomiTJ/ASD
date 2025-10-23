@@ -26,9 +26,23 @@
                 <p>Total Accounts: <span id ="totalAccounts">Loading...</span></p>
                 <p>Total Transactions: <span id ="totalTransactions">Loading...</span></p>
             </div>
-            <div style="width: 600px; margin: auto;">
-                <canvas id="transactionsChart"></canvas>
+            <div style="max-width: 1200px; margin: 16px auto;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;">
+                    <div class="card" style="padding:12px;">
+                        <h3 style="margin:0 0 8px;">Transactions (Weekly Data)</h3>
+                        <canvas id="transactionsChart"></canvas>
+                    </div>
+                    <div class="card" style="padding:12px;">
+                        <h3 style="margin:0 0 8px;">Users(Weekly Data)</h3>
+                        <canvas id="usersChart"></canvas>
+                    </div>
+                    <div class="card" style="padding:12px;">
+                        <h3 style="margin:0 0 8px;">Accounts(Weekly Data)</h3>
+                        <canvas id="accountsChart"></canvas>
+                    </div>
+                </div>
             </div>
+
 
             <script src="dashboard.js"></script>
             <div>
