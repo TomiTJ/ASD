@@ -127,6 +127,8 @@ public class AccountServiceImpl implements AccountService {
         dto.setAccountType(account.getAccountType());
         dto.setAccountStatus(account.getAccountStatus());
         dto.setBalance(account.getBalance());
+        dto.setCreatedAt(account.getCreatedAt());
+        dto.setUpdatedAt(account.getUpdatedAt());
 
         // Get customer details
         customerRepository.findById(account.getCustomerId()).ifPresent(customer -> {
