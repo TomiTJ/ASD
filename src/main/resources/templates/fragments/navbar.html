@@ -18,7 +18,7 @@
                 Welcome, <b th:text="${userName}"></b>
                 (<span th:text="${userRole}"></span>)
             </span>
-            <form method="post" action="/logout" style="display:inline">
+            <form method="post" th:action="@{/logout}" style="display:inline">
                 <button type="submit">Logout</button>
             </form>
         </div>
