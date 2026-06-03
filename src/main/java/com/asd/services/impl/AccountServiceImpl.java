@@ -9,6 +9,8 @@ import com.asd.repository.AccountRepository;
 import com.asd.repository.CustomerRepository;
 import com.asd.repository.JointAccountRepository;
 import com.asd.services.AccountService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +52,14 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
+    private static final int MAX_PAGE_SIZE = 200;
+
     @Override
     public List<AccountDto> findAllAccounts() {
-        return accountRepository.findAll().stream()
+        return accountRepository
+                .findAll(PageRequest.of(0, MAX_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .getContent()
+                .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

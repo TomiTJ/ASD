@@ -13,11 +13,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                // 👇 IMPORTANT: do not require authentication anywhere;
-                // your controllers already enforce access via session checks.
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .formLogin(form -> form.disable()); // still using your AuthController
+                // CSRF enabled — Thymeleaf th:action auto-injects the token in all forms
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // REST endpoints use session guard, not CSRF tokens
+                )
+                // Authentication is enforced per-controller via session checks (requireLogin).
+                // Public paths: login page, static assets, and the login POST action.
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .anyRequest().permitAll() // session guards in controllers handle the rest
+                )
+                .formLogin(form -> form.disable()); // using custom AuthController
 
         return http.build();
     }

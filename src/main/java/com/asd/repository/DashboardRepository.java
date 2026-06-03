@@ -14,7 +14,7 @@ public interface DashboardRepository extends JpaRepository<Transaction, UUID> {
     @Query(value = "SELECT COUNT(*) FROM users", nativeQuery = true)
     public Long countUsers();
 
-    @Query(value = "SELECT COUNT(*) FROM customers", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM account", nativeQuery = true)
     public long countAccounts();
 
     @Query(value = "SELECT COUNT(*) FROM transactions", nativeQuery = true)

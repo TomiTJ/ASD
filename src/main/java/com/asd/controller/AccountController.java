@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/account")
@@ -285,6 +286,7 @@ public class AccountController {
     }
 
     private String generateAccountNumber() {
-        return "ACC" + System.currentTimeMillis();
+        // UUID-based: collision-free even under concurrent requests
+        return "ACC-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
     }
 }

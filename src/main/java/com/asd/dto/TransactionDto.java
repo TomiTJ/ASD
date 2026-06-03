@@ -1,14 +1,11 @@
 package com.asd.dto;
 import com.asd.model.*;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-import java.time.Instant;
-import java.util.stream.Collector;
 
 import lombok.Data;
 
@@ -16,7 +13,7 @@ import lombok.Data;
 @Builder
 public class TransactionDto {
     private int id;
-    private Double amount;
+    private BigDecimal amount;
     private Transaction.TransactionType type;
     private Customer customer;
     private Transaction.TransactionStatus status;
