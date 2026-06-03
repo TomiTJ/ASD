@@ -1,8 +1,10 @@
--- Drop old tables if they exist
+-- Drop old tables if they exist (order matters — children before parents)
 DROP TABLE IF EXISTS joint_accounts CASCADE;
-DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS loan_application CASCADE;
+DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS audit_event CASCADE;
+DROP TABLE IF EXISTS account CASCADE;
 DROP TABLE IF EXISTS customers CASCADE;
-DROP TABLE IF EXISTS audit_event;
 DROP TABLE IF EXISTS users CASCADE;
 
 -- Users table
@@ -183,9 +185,6 @@ VALUES
 -- Depends on an existing `users` table with `id` (PK) and `email`
 -- =========================================================
 
--- Drop old table if needed
-DROP TABLE IF EXISTS account CASCADE;
-
 -- CREATE accounts table (references customers, not users)
 CREATE TABLE account (
                          id             BIGSERIAL PRIMARY KEY,
@@ -255,4 +254,21 @@ CREATE INDEX idx_joint_accounts_account_id
 
 CREATE INDEX idx_joint_accounts_customer_id
     ON joint_accounts(customer_id);
+
+-- Loan application table
+CREATE TABLE loan_application (
+    id            BIGSERIAL PRIMARY KEY,
+    customer_id   BIGINT        NOT NULL,
+    product       VARCHAR(100)  NOT NULL,
+    principal     NUMERIC(12,2) NOT NULL CHECK (principal > 0),
+    status        VARCHAR(20)   NOT NULL DEFAULT 'SUBMITTED',
+    notes         TEXT,
+    submitted_at  DATE          NOT NULL DEFAULT CURRENT_DATE,
+    decided_at    DATE,
+
+    CONSTRAINT fk_loan_customer
+        FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
+    CONSTRAINT chk_loan_status
+        CHECK (status IN ('SUBMITTED', 'APPROVED', 'REJECTED'))
+);
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Controller
@@ -50,7 +51,7 @@ public class AuditController {
             try { actionEnum = Action.valueOf(action.trim().toUpperCase()); } catch (IllegalArgumentException ignored) {}
         }
 
-        ZoneId zone = ZoneId.of("Australia/Sydney");
+        ZoneId zone = ZoneOffset.UTC;  // use UTC — consistent regardless of where the server runs
         Instant fromTs = (from != null) ? from.atStartOfDay(zone).toInstant() : null;
         Instant toTs   = (to   != null) ? to.plusDays(1).atStartOfDay(zone).minusNanos(1).toInstant() : null;
 

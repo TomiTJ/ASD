@@ -1,10 +1,9 @@
 package com.asd.model;
 
-import com.asd.services.TransactionService;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "transactions")
@@ -32,14 +31,15 @@ public class Transaction {
     private Customer customer;
     @Enumerated(EnumType.STRING)
     private TransactionType type;
-    private Double amount;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal amount;
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
     private OffsetDateTime createdAt;
 
     public Transaction() {}
 
-    public Transaction(Customer customer, TransactionType type, Double amount, TransactionStatus status, OffsetDateTime createdAt) {
+    public Transaction(Customer customer, TransactionType type, BigDecimal amount, TransactionStatus status, OffsetDateTime createdAt) {
         this.customer = customer;
         this.type = type;
         this.amount = amount;
@@ -50,7 +50,7 @@ public class Transaction {
     public int getId() {
         return id;
     }
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
     public Customer getCustomer() {

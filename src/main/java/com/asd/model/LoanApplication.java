@@ -3,6 +3,7 @@ package com.asd.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 @Entity
 @Table(name = "loan_application")
@@ -27,8 +28,15 @@ public class LoanApplication {
     private Status status = Status.SUBMITTED;
 
     private String notes;
-    private LocalDate submittedAt = LocalDate.now();
+    private LocalDate submittedAt;
     private LocalDate decidedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (submittedAt == null) {
+            submittedAt = LocalDate.now(ZoneOffset.UTC);
+        }
+    }
 
     public LoanApplication() {}
 

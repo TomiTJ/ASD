@@ -55,7 +55,7 @@ async function loadMetrics() {
 
         mkLine('transactionsChart', 'Transactions per Day', makeTrend(data.totalTransactions));
         mkLine('usersChart',        'Users Total Trend',     makeTrend(data.totalUsers));
-        mkLine('accountsChart',     'Accounts Total Trend',  makeTrend(data.totalAccounts));
+        mkLine('accountsChart',     'Customers Total Trend',  makeTrend(data.totalAccounts));
 
     } catch (e) {
         console.error('Error loading metrics:', e);

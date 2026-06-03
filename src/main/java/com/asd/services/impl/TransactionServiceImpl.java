@@ -4,6 +4,8 @@ import com.asd.dto.TransactionDto;
 import com.asd.model.Transaction;
 import com.asd.repository.TransactionRepository;
 import com.asd.services.TransactionService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +20,22 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    private static final int MAX_PAGE_SIZE = 200;
+
     @Override
     public List<TransactionDto> findallTransactions() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream().map(transaction -> mapToTransactionData(transaction)).collect(Collectors.toList());
+        List<Transaction> transactions = transactionRepository
+                .findAll(PageRequest.of(0, MAX_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .getContent();
+        return transactions.stream().map(this::mapToTransactionData).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDto> findFilteredTransactions(String search, String type, String status) {
-        List<Transaction> transactions = transactionRepository.findAll();
+        // Load a bounded set and filter in-memory; replace with a @Query for large datasets
+        List<Transaction> transactions = transactionRepository
+                .findAll(PageRequest.of(0, MAX_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .getContent();
 
         String keyword = (search == null) ? "" : search.trim().toLowerCase();
         String typeFilter = (type == null) ? "" : type.trim().toUpperCase();

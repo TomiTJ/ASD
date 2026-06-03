@@ -21,7 +21,7 @@ public class Audit {
     @Column(name = "audit_event_id")
     private UUID auditEventId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

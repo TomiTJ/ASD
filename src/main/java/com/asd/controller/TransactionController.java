@@ -93,11 +93,14 @@ public class TransactionController {
         csvPrinter.printRecord("Transaction ID", "Customer", "Type", "Amount", "Status", "Time Created", "Date Created");
 
         for (TransactionDto transaction : transactions) {
-                    csvPrinter.printRecord(transaction.getId(),
-                    transaction.getCustomer().getName(),
-                    transaction.getType(), transaction.getAmount(),
-                    transaction.getStatus(), transaction.getTimeCreatedAt(),
-                    transaction.getDateCreatedAt());
+            csvPrinter.printRecord(
+                    transaction.getId(),
+                    sanitizeCsv(transaction.getCustomer().getName()),
+                    transaction.getType(),
+                    transaction.getAmount(),
+                    transaction.getStatus(),
+                    sanitizeCsv(transaction.getTimeCreatedAt()),
+                    sanitizeCsv(transaction.getDateCreatedAt()));
         }
         csvPrinter.flush();
 
@@ -109,5 +112,18 @@ public class TransactionController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(data);
+    }
+
+    /**
+     * Prevents CSV injection: values starting with formula-trigger characters
+     * are prefixed with a single quote so spreadsheet apps treat them as text.
+     */
+    private String sanitizeCsv(String value) {
+        if (value == null) return "";
+        String trimmed = value.trim();
+        if (!trimmed.isEmpty() && "=+-@\t\r".indexOf(trimmed.charAt(0)) >= 0) {
+            return "'" + trimmed;
+        }
+        return trimmed;
     }
 }
