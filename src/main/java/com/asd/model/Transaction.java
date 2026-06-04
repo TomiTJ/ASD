@@ -1,10 +1,14 @@
 package com.asd.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -52,29 +56,4 @@ public class Transaction {
         this.status = status;
         this.createdAt = createdAt;
     }
-
-    public int getId() {
-        return id;
-    }
-    public BigDecimal getAmount() {
-        return amount;
-    }
-    public Customer getCustomer() {
-        return customer;
-    }
-    public Account getFromAccount() { return fromAccount; }
-    public Account getToAccount() { return toAccount; }
-    public TransactionType getType() { return type; }
-    public TransactionStatus getStatus() { return status; }
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-
-    public void setCustomer(Customer customer) { this.customer = customer; }
-    public void setFromAccount(Account fromAccount) { this.fromAccount = fromAccount; }
-    public void setToAccount(Account toAccount) { this.toAccount = toAccount; }
-    public void setType(TransactionType type) { this.type = type; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public void setStatus(TransactionStatus status) { this.status = status; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-
-
 }

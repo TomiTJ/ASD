@@ -1,13 +1,13 @@
 package com.asd.dto;
-import com.asd.model.*;
-import lombok.AllArgsConstructor;
+
+import com.asd.model.Customer;
+import com.asd.model.Transaction;
 import lombok.Builder;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-
-import lombok.Data;
 
 @Data
 @Builder
@@ -30,4 +30,4 @@ public class TransactionDto {
         return createdAt.format(formatter);
     }
 
-    }
+}
