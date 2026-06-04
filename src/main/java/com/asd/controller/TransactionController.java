@@ -2,9 +2,8 @@ package com.asd.controller;
 
 
 import com.asd.dto.TransactionDto;
-import com.asd.model.Transaction;
-import com.asd.model.User;
-import com.asd.repository.TransactionRepository;
+import com.asd.dto.TransferRequestDto;
+import com.asd.services.AccountService;
 import com.asd.services.TransactionService;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.csv.CSVFormat;
@@ -17,20 +16,23 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class TransactionController {
 
     private TransactionService transactionService;
+    private AccountService accountService;
 
-    public TransactionController(TransactionService transactionService){
+    public TransactionController(TransactionService transactionService, AccountService accountService){
         this.transactionService = transactionService;
+        this.accountService = accountService;
     }
 
 
@@ -57,7 +59,56 @@ public class TransactionController {
         }
         model.addAttribute("userName",userName );
         model.addAttribute("userRole",userRole );
+        model.addAttribute("accounts", accountService.findAllAccounts());
         return "transactionsPage";
+    }
+
+    @PostMapping("/transactions/transfer")
+    public String transfer(@RequestParam Long fromAccountId,
+                           @RequestParam Long toAccountId,
+                           @RequestParam java.math.BigDecimal amount,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+        Object userId = session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            TransferRequestDto request = new TransferRequestDto();
+            request.setFromAccountId(fromAccountId);
+            request.setToAccountId(toAccountId);
+            request.setAmount(amount);
+            transactionService.transfer(request);
+            redirectAttributes.addFlashAttribute("successMessage", "Transfer completed successfully");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/transactions";
+    }
+
+    @PostMapping("/transactions/api/transfers")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> transferApi(@RequestBody TransferRequestDto request,
+                                                           HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        Object userId = session.getAttribute("userId");
+        if (userId == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        try {
+            response.put("success", true);
+            response.put("transfer", transactionService.transfer(request));
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     @GetMapping("/transactions/download")

@@ -16,6 +16,8 @@ public class TransactionDto {
     private BigDecimal amount;
     private Transaction.TransactionType type;
     private Customer customer;
+    private String fromAccountNumber;
+    private String toAccountNumber;
     private Transaction.TransactionStatus status;
     private OffsetDateTime createdAt;
 

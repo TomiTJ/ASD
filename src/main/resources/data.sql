@@ -104,6 +104,8 @@ INSERT INTO customers (full_name, email) VALUES
 CREATE TABLE transactions (
                               id SERIAL PRIMARY KEY,
                               customer_id INTEGER NOT NULL,
+                              from_account_id BIGINT,
+                              to_account_id BIGINT,
                               type VARCHAR(50),
                               amount NUMERIC(12, 2),
                               status VARCHAR(50),
@@ -207,6 +209,12 @@ CREATE TABLE account (
 
 CREATE INDEX idx_account_customer_id ON account(customer_id);
 
+ALTER TABLE transactions
+    ADD CONSTRAINT fk_transactions_from_account
+        FOREIGN KEY (from_account_id) REFERENCES account(id) ON DELETE SET NULL,
+    ADD CONSTRAINT fk_transactions_to_account
+        FOREIGN KEY (to_account_id) REFERENCES account(id) ON DELETE SET NULL;
+
 -- SEED accounts (using customer IDs 1-10 from your customers table)
 INSERT INTO account (account_number, customer_id, account_type, account_status, balance) VALUES
                                                                                              ('ACC-1000456701', 1, 'TRANSACTIONAL', 'OPEN',   1250.75),
@@ -271,4 +279,3 @@ CREATE TABLE loan_application (
     CONSTRAINT chk_loan_status
         CHECK (status IN ('SUBMITTED', 'APPROVED', 'REJECTED'))
 );
-

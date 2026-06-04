@@ -1,5 +1,6 @@
 package com.asd;
 import com.asd.controller.TransactionController;
+import com.asd.services.AccountService;
 import com.asd.services.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,14 @@ import static org.mockito.Mockito.when;
 class TransactionControllerTests {
 
     private TransactionService transactionService;
+    private AccountService accountService;
     private TransactionController controller;
 
     @BeforeEach
     void setUp() {
         transactionService = Mockito.mock(TransactionService.class);
-        controller = new TransactionController(transactionService);
+        accountService = Mockito.mock(AccountService.class);
+        controller = new TransactionController(transactionService, accountService);
     }
 
     //void testNonEmptyDownload() throws IOException {

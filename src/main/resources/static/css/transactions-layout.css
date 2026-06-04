@@ -35,6 +35,11 @@
 .alert{
     color: red;
 }
+
+.success-alert{
+    color: #166534;
+    padding: 8px;
+}
 .heading-container{
     display: flex;
     align-items: center;
@@ -45,6 +50,53 @@
 .transactions-container{
     height: 600px;
     overflow-y: auto;
+}
+
+.transfer-container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.transfer-grid{
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) minmax(190px, 1fr) minmax(120px, 160px) auto;
+    align-items: end;
+    gap: 10px;
+}
+
+.transfer-grid label{
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #4b5563;
+}
+
+.transfer-grid select,
+.transfer-grid input{
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #F3F3F5;
+    border: 1px solid #E5E5E5;
+    padding: 6px;
+    border-radius: 5px;
+    outline: none;
+}
+
+.transfer-action{
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+    .transfer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-filter-items {
+        align-items: stretch;
+        flex-direction: column;
+    }
 }
 
 
