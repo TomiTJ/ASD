@@ -34,10 +34,8 @@ public class Transaction {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
     @ManyToOne
-    @JoinColumn(name = "from_account_id")
     private Account fromAccount;
     @ManyToOne
-    @JoinColumn(name = "to_account_id")
     private Account toAccount;
     @Enumerated(EnumType.STRING)
     private TransactionType type;
