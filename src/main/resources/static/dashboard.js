@@ -61,13 +61,19 @@ async function loadDashboard() {
         const d = await res.json();
 
         // ── Metric cards ──────────────────────────────────────
-        document.getElementById('totalUsers').textContent        = d.totalUsers ?? 0;
-        document.getElementById('totalAccounts').textContent     = d.totalAccounts ?? 0;
-        document.getElementById('totalTransactions').textContent = d.totalTransactions ?? 0;
+        function setCard(id, value) {
+            const el = document.getElementById(id);
+            el.textContent = value;
+            el.classList.remove('skeleton');
+        }
+
+        setCard('totalUsers',        d.totalUsers ?? 0);
+        setCard('totalAccounts',     d.totalAccounts ?? 0);
+        setCard('totalTransactions', d.totalTransactions ?? 0);
 
         const bal = d.totalOpenBalance ?? 0;
-        document.getElementById('totalBalance').textContent =
-            '$' + Number(bal).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        setCard('totalBalance',
+            '$' + Number(bal).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
         // ── Transaction Status — Donut ────────────────────────
         const txStatus = d.transactionsByStatus ?? {};

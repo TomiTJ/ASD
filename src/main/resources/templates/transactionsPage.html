@@ -2,43 +2,166 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Transactions — Bank Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/transactions-layout.css}">
+    <style>
+        /* Transfer Modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            width: 100%;
+            max-width: 560px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-box h3 {
+            margin: 0 0 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        .modal-box label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 7px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            background: #f9fafb;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+        }
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #fff;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .btn-primary-modal {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 9px 22px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-primary-modal:hover { background: #2563eb; }
+        .btn-cancel-modal {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-radius: 7px;
+            padding: 9px 22px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-cancel-modal:hover { background: #e5e7eb; }
+        /* Empty state */
+        .empty-state-row td {
+            text-align: center;
+            padding: 40px 0;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        .empty-state-row .empty-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        /* Status badge */
+        .tx-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .tx-status-completed { background: #d1fae5; color: #065f46; }
+        .tx-status-pending   { background: #fef3c7; color: #92400e; }
+        .tx-status-failed    { background: #fee2e2; color: #991b1b; }
+        .tx-status-flagged   { background: #ede9fe; color: #5b21b6; }
+        .btn-new-transfer {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 7px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-new-transfer:hover { background: #2563eb; }
+    </style>
 </head>
-    <body>
-    <div class="main-layout">
-        <div class="top-bar">
+<body>
+<div class="main-layout">
+    <div class="top-bar">
+        <span class="top-bar-title">Transactions</span>
+        <div class="top-bar-right">
             <div class="name-card">
                 <div th:text="${userName}"></div>
                 <div class="position" th:text="${userRole}"></div>
             </div>
             <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
         </div>
+    </div>
 
-        <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
 
-        <div class="main-content-container">
-            <div class="heading-container"><h4>Transaction Monitoring</h4>
-                <div>
-                    <a th:href="@{/transactions/download(
-                            search=${param.search},
-                            type=${param.type},
-                            status=${param.status})}">
-                        <button class="btn-style"><label>Export CSV</label></button>
-                    </a>
-                    <div th:if="${errorMessage}" class="alert" th:text="${errorMessage}"></div>
-                </div>
+    <div class="main-content-container">
+
+        <!-- Header row -->
+        <div class="heading-container">
+            <h4>Transaction Monitoring</h4>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <div th:if="${successMessage}" class="success-alert" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}"   class="alert"         th:text="${errorMessage}"></div>
+                <button class="btn-new-transfer" onclick="document.getElementById('transferModal').classList.add('open')">
+                    + New Transfer
+                </button>
+                <a th:href="@{/transactions/download(search=${param.search},type=${param.type},status=${param.status})}">
+                    <button class="btn-style">Export CSV</button>
+                </a>
             </div>
+        </div>
 
-            <div class="search-filter-container">
-                <h4>Search & Filter</h4>
-                <form th:action="@{/transactions}" method="get">
+        <!-- Filter bar -->
+        <div class="search-filter-container">
+            <form th:action="@{/transactions}" method="get">
                 <div class="search-filter-items">
-                    <div><input type="text" id="search" name="search" placeholder="Search by customer or transaction ID "></div>
+                    <div><input type="text" id="search" name="search" placeholder="Search by customer or transaction ID"></div>
                     <div>
                         <select name="type">
                             <option value="">All Types</option>
@@ -55,77 +178,91 @@
                             <option value="failed">Failed</option>
                         </select>
                     </div>
-                    <div><button class="btn-style" type="submit">Apply Filters</button></div>
+                    <div><button class="btn-style" type="submit">Filter</button></div>
                 </div>
-                </form>
-            </div>
-            <div class="transfer-container">
-                <h4>Process Transfer</h4>
-                <form th:action="@{/transactions/transfer}" method="post">
-                    <div class="transfer-grid">
-                        <div>
-                            <label for="fromAccountId">From</label>
-                            <select id="fromAccountId" name="fromAccountId" required>
-                                <option value="">Select source</option>
-                                <option th:each="account : ${accounts}"
-                                        th:value="${account.id}"
-                                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
-                                </option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="toAccountId">To</label>
-                            <select id="toAccountId" name="toAccountId" required>
-                                <option value="">Select destination</option>
-                                <option th:each="account : ${accounts}"
-                                        th:value="${account.id}"
-                                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
-                                </option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="amount">Amount</label>
-                            <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
-                        </div>
-                        <div class="transfer-action">
-                            <button class="btn-style" type="submit">Transfer</button>
-                        </div>
-                    </div>
-                </form>
-                <div th:if="${successMessage}" class="success-alert" th:text="${successMessage}"></div>
-            </div>
-            <div class="transactions-container">
-                <h4>Transactions List</h4>
-                <table>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Customer</th>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                    </tr>
-                    <tr th:each="transaction : ${transactions}">
-                        <td th:text="${transaction.id}"></td>
-                        <td th:text="${transaction.getCustomer().getName()}"></td>
-                        <td th:text="${transaction.fromAccountNumber ?: '-'}"></td>
-                        <td th:text="${transaction.toAccountNumber ?: '-'}"></td>
-                        <td th:text="${transaction.getType()}"></td>
-                        <td th:text="'$' + ${transaction.getAmount()}"></td>
-                        <td th:text="${transaction.getStatus()}"></td>
-                        <td th:text="${transaction.getDateCreatedAt() + ', ' + transaction.getTimeCreatedAt()}"></td>
-                    </tr>
-                    <tr th:if="${transactions.isEmpty()}">
-                        <td colspan="8" style="text-align:center; color: gray;">No transactions found</td>
-                    </tr>
-                </table>
-
-            </div>
+            </form>
         </div>
 
-        <div class="footer"></div>
+        <!-- Transactions table -->
+        <div class="transactions-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction : ${transactions}">
+                    <td th:text="${transaction.id}"></td>
+                    <td th:text="${transaction.getCustomer().getName()}"></td>
+                    <td th:text="${transaction.fromAccountNumber ?: '—'}"></td>
+                    <td th:text="${transaction.toAccountNumber ?: '—'}"></td>
+                    <td style="text-transform:capitalize" th:text="${transaction.getType().name().toLowerCase()}"></td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(transaction.getAmount(), 1, 2)}"></td>
+                    <td>
+                        <span th:text="${transaction.getStatus().name().toLowerCase()}"
+                              th:classappend="'tx-status tx-status-' + ${transaction.getStatus().name().toLowerCase()}">
+                        </span>
+                    </td>
+                    <td th:text="${transaction.getDateCreatedAt() + ', ' + transaction.getTimeCreatedAt()}"></td>
+                </tr>
+                <tr class="empty-state-row" th:if="${transactions.isEmpty()}">
+                    <td colspan="8">
+                        <span class="empty-icon">💳</span>
+                        No transactions found
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    </body>
+
+    <div class="footer"></div>
+</div>
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal-backdrop" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal-box">
+        <h3>Process Transfer</h3>
+        <form th:action="@{/transactions/transfer}" method="post">
+            <label for="fromAccountId">From account</label>
+            <select id="fromAccountId" name="fromAccountId" required>
+                <option value="">Select source account…</option>
+                <option th:each="account : ${accounts}"
+                        th:value="${account.id}"
+                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
+                </option>
+            </select>
+
+            <label for="toAccountId">To account</label>
+            <select id="toAccountId" name="toAccountId" required>
+                <option value="">Select destination account…</option>
+                <option th:each="account : ${accounts}"
+                        th:value="${account.id}"
+                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
+                </option>
+            </select>
+
+            <label for="amount">Amount (AUD)</label>
+            <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel-modal"
+                        onclick="document.getElementById('transferModal').classList.remove('open')">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-primary-modal">Process Transfer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
 </html>

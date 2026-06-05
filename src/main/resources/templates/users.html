@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Management</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
@@ -10,11 +11,14 @@
 <body>
 <div class="main-layout">
     <div class="top-bar">
-        <div class="name-card">
-            <div th:text="${userName}"></div>
-            <div class="position" th:text="${userRole}"></div>
+        <span class="top-bar-title">Users</span>
+        <div class="top-bar-right">
+            <div class="name-card">
+                <div th:text="${userName}"></div>
+                <div class="position" th:text="${userRole}"></div>
+            </div>
+            <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
         </div>
-        <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
 
     <div th:replace="~{fragments/navbar2 :: navbar2}"></div>

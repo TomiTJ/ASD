@@ -12,11 +12,14 @@
 <body>
 <div class="main-layout">
   <div class="top-bar">
-    <div class="name-card">
-      <div th:text="${userName}">John Doe</div>
-      <div class="position" th:text="${userRole}">Admin</div>
+    <span class="top-bar-title">Reports</span>
+    <div class="top-bar-right">
+      <div class="name-card">
+        <div th:text="${userName}">John Doe</div>
+        <div class="position" th:text="${userRole}">Admin</div>
+      </div>
+      <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
-    <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
   </div>
 
   <!-- Navbar Fragment -->
