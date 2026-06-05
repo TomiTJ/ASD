@@ -1,22 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-</head>
+<head></head>
 <body>
 <div th:fragment="navbar2">
-        <div class="navbar">
-            <div class="app-name"><img th:src="@{/icons/templogo.svg}" alt="Logo"><span>Admin Bank App</span></div>
-            <div class="nav-items">
-                <div th:onclick="|location.href='/dashboard'|"><img th:src="@{/icons/dashboard.svg}" alt="Icon"><span>Dashboard</span></div>
-                <div th:onclick="|location.href='/users'|"><img th:src="@{/icons/accounts.svg}" alt="Icon"><span>Users</span></div>
-                <div th:onclick="|location.href='/account'|"><img th:src="@{/icons/accounts.svg}" alt="Icon"><span>Customer Accounts</span></div>
-                <div th:onclick="|location.href='/transactions'|"><img th:src="@{/icons/transaction.svg}" alt="Icon"><span>Transactions</span></div>
-                <div th:onclick="|location.href='/loan'|"><img th:src="@{/icons/loans.svg}" alt="Icon"><span>Loans</span></div>
-                <div th:onclick="|location.href='/reports'|"><img th:src="@{/icons/reports.svg}" alt="Icon"><span>Reports</span></div>
-                <div th:onclick="|location.href='/audit'|"><img th:src="@{/icons/reports.svg}" alt="Icon">Audits</div>
-                <div th:onclick="|location.href='/logout'|"><img th:src="@{/icons/logout.svg}" alt="Icon"><span>Logout</span></div>
-            </div>
-        </div>
+    <div class="navbar">
+        <a href="/dashboard" class="app-name">
+            <img th:src="@{/icons/templogo.svg}" alt="Logo">
+            <span>Bank Admin</span>
+        </a>
+        <nav class="nav-items">
+            <a href="/dashboard"    class="nav-item" data-path="/dashboard">
+                <img th:src="@{/icons/dashboard.svg}"   alt=""> <span>Dashboard</span>
+            </a>
+            <a href="/users"        class="nav-item" data-path="/users">
+                <img th:src="@{/icons/accounts.svg}"    alt=""> <span>Users</span>
+            </a>
+            <a href="/account"      class="nav-item" data-path="/account">
+                <img th:src="@{/icons/accounts.svg}"    alt=""> <span>Accounts</span>
+            </a>
+            <a href="/transactions" class="nav-item" data-path="/transactions">
+                <img th:src="@{/icons/transaction.svg}" alt=""> <span>Transactions</span>
+            </a>
+            <a href="/loan"         class="nav-item" data-path="/loan">
+                <img th:src="@{/icons/loans.svg}"       alt=""> <span>Loans</span>
+            </a>
+            <a href="/reports"      class="nav-item" data-path="/reports">
+                <img th:src="@{/icons/reports.svg}"     alt=""> <span>Reports</span>
+            </a>
+            <a href="/audit"        class="nav-item" data-path="/audit">
+                <img th:src="@{/icons/reports.svg}"     alt=""> <span>Audits</span>
+            </a>
+
+            <div class="nav-spacer"></div>
+            <hr class="nav-divider">
+
+            <form method="post" th:action="@{/logout}" style="margin:0;">
+                <button type="submit" class="nav-item nav-logout"
+                        style="width:100%;background:none;border:none;cursor:pointer;text-align:left;font-family:inherit;font-size:inherit;">
+                    <img th:src="@{/icons/logout.svg}" alt=""> <span>Logout</span>
+                </button>
+            </form>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const path = window.location.pathname;
+            document.querySelectorAll('a.nav-item[data-path]').forEach(function(link) {
+                const lp = link.getAttribute('data-path');
+                if (path === lp || (path.startsWith(lp + '/') && lp !== '/')) {
+                    link.classList.add('active');
+                }
+            });
+        })();
+    </script>
 </div>
 </body>
 </html>

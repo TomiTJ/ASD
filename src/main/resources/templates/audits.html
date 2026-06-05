@@ -2,8 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Audit</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Audits — Bank Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/reports-layout.css}">
     <link rel="stylesheet" th:href="@{/css/audit.css}">
@@ -15,7 +17,7 @@
             <div th:text="${userName}">John Doe</div>
             <div class="position" th:text="${userRole}">Admin</div>
         </div>
-        <div class="img-placeholder"></div>
+        <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
 
     <div th:replace="~{fragments/navbar2 :: navbar2}"></div>

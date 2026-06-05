@@ -1,24 +1,46 @@
 <!doctype html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <title>Loan Demo</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" th:href="@{css/main.css}">
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loans — Bank Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
-        h1 { margin: 0 0 12px }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; }
-        label { display:block; font-size: 12px; color:#555; margin-top:8px }
-        input, select, button, textarea { padding: 8px; border:1px solid #ccc; border-radius:8px; width:100% }
-        table { width:100%; border-collapse: collapse; margin-top: 8px }
-        th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; font-size: 14px }
-        .row { display:flex; gap:8px; align-items:center }
-        .btn { cursor:pointer; }
-        .ok { background:#10b981; color:white; border:none }
-        .bad { background:#ef4444; color:white; border:none }
-        .muted { color:#666; font-size:12px }
+        .loan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .loan-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; }
+        .loan-card h2 { margin: 0 0 16px; font-size: 1rem; font-weight: 600; color: #111827; }
+        .loan-card label { display: block; font-size: 0.8rem; font-weight: 500; color: #6b7280; margin: 10px 0 4px; }
+        .loan-card input,
+        .loan-card select,
+        .loan-card textarea {
+            width: 100%; padding: 8px 10px; border: 1px solid #e5e7eb;
+            border-radius: 6px; font-size: 0.875rem; font-family: inherit;
+            background: #f9fafb; color: #111827; box-sizing: border-box;
+        }
+        .loan-card input:focus,
+        .loan-card select:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .loan-submit-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+        .btn-submit-loan {
+            background: #3b82f6; color: #fff; border: none; border-radius: 6px;
+            padding: 9px 20px; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-submit-loan:hover { background: #2563eb; }
+        .msg-text { font-size: 0.82rem; color: #6b7280; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+        th { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase;
+             letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; padding: 8px 6px; text-align: left; }
+        td { border-bottom: 1px solid #f3f4f6; padding: 8px 6px; color: #374151; }
+        .btn-approve { background: #10b981; color: #fff; border: none; border-radius: 5px;
+                       padding: 4px 10px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+        .btn-approve:hover { background: #059669; }
+        .btn-reject  { background: #ef4444; color: #fff; border: none; border-radius: 5px;
+                       padding: 4px 10px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+        .btn-reject:hover  { background: #dc2626; }
+        .status-text { font-size: 0.78rem; color: #9ca3af; }
+        @media (max-width: 768px) { .loan-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -28,53 +50,58 @@
             <div th:text="${userName}"></div>
             <div class="position" th:text="${userRole}"></div>
         </div>
-        <div class="img-placeholder"></div>
+        <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
-    <div th:replace="fragments/navbar2 :: navbar2"></div>
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
     <div class="main-content-container">
-        <div>
-            <h1>Loan Application Demo </h1>
-            <div class="grid">
-                <div class="card">
-                    <h2>Customer – Apply</h2>
-                    <label>Customer ID (from customers table)</label>
-                    <input id="cId" type="number" placeholder="e.g. 1" />
-                    <label>Product</label>
-                    <input id="prod" placeholder="Personal Loan" />
-                    <label>Amount ($)</label>
-                    <input id="amt" type="number" placeholder="5000" />
-                    <div class="row" style="margin-top:10px">
-                        <button class="btn" onclick="submitApp()">Submit Application</button>
-                        <span id="msg" class="muted"></span>
-                    </div>
-                </div>
+        <h2 style="margin:0 0 20px; font-size:1.25rem; font-weight:700; color:#111827;">Loan Applications</h2>
+        <div class="loan-grid">
 
-                <div class="card">
-                    <h2>Admin – Review</h2>
-                    <div class="row">
-                        <label>Status filter</label>
-                        <select id="flt" onchange="loadApps()">
-                            <option value="">All</option>
-                            <option>SUBMITTED</option>
-                            <option>APPROVED</option>
-                            <option>REJECTED</option>
-                        </select>
-                    </div>
-                    <table>
-                        <thead><tr><th>ID</th><th>Customer</th><th>Product</th><th>Principal</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody id="rows"></tbody>
-                    </table>
+            <div class="loan-card">
+                <h2>Submit Application</h2>
+                <label>Customer ID</label>
+                <input id="cId" type="number" placeholder="e.g. 1">
+                <label>Product</label>
+                <input id="prod" placeholder="Personal Loan">
+                <label>Amount ($)</label>
+                <input id="amt" type="number" placeholder="5000" min="1" step="0.01">
+                <div class="loan-submit-row">
+                    <button class="btn-submit-loan" onclick="submitApp()">Submit</button>
+                    <span id="msg" class="msg-text"></span>
                 </div>
             </div>
+
+            <div class="loan-card">
+                <h2>Review Applications</h2>
+                <label>Filter by status</label>
+                <select id="flt" onchange="loadApps()">
+                    <option value="">All</option>
+                    <option>SUBMITTED</option>
+                    <option>APPROVED</option>
+                    <option>REJECTED</option>
+                </select>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Principal</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+
         </div>
     </div>
     <div class="footer"></div>
 </div>
-<body>
-
 
 <script>
-    const $ = (id)=>document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
     async function submitApp() {
         const payload = {
@@ -82,14 +109,15 @@
             product: $('prod').value || 'Personal Loan',
             principal: Number($('amt').value || '0')
         };
-        $('msg').textContent = 'Submitting...';
+        $('msg').textContent = 'Submitting…';
         const res = await fetch('/api/loan-applications', {
-            method:'POST', headers:{'Content-Type':'application/json'},
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if(!res.ok){ $('msg').textContent = 'Error submitting.'; return; }
+        if (!res.ok) { $('msg').textContent = 'Error submitting.'; return; }
         const data = await res.json();
-        $('msg').textContent = 'Submitted ID ' + data.id + ' (status ' + data.status + ')';
+        $('msg').textContent = 'Submitted — ID ' + data.id;
         loadApps();
     }
 
@@ -98,24 +126,26 @@
         const res = await fetch('/api/loan-applications' + q);
         const list = await res.json();
         $('rows').innerHTML = list.map(a => `
-    <tr>
-      <td>${a.id}</td>
-      <td>${a.customerId}</td>
-      <td>${a.product}</td>
-      <td>$${Number(a.principal).toLocaleString()}</td>
-      <td>${a.status}</td>
-      <td>
-        ${a.status === 'SUBMITTED'
-            ? '<button class="ok" onclick="decide('+a.id+',true)">Approve</button> ' +
-            '<button class="bad" onclick="decide('+a.id+',false)">Reject</button>'
-            : '<span class="muted">No action</span>'}
-      </td>
-    </tr>`).join('');
+            <tr>
+                <td>${a.id}</td>
+                <td>${a.customerId}</td>
+                <td>${a.product}</td>
+                <td>$${Number(a.principal).toLocaleString('en-AU', {minimumFractionDigits:2})}</td>
+                <td style="text-transform:capitalize">${a.status.toLowerCase()}</td>
+                <td>
+                    ${a.status === 'SUBMITTED'
+                        ? `<button class="btn-approve" onclick="decide(${a.id},true)">Approve</button>
+                           <button class="btn-reject"  onclick="decide(${a.id},false)">Reject</button>`
+                        : '<span class="status-text">—</span>'}
+                </td>
+            </tr>`).join('');
     }
+
     async function decide(id, approve) {
-        await fetch('/api/loan-applications/'+id+'/decision', {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ approve, notes: approve ? 'ok' : 'not eligible' })
+        await fetch('/api/loan-applications/' + id + '/decision', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ approve, notes: approve ? 'Approved' : 'Not eligible' })
         });
         loadApps();
     }

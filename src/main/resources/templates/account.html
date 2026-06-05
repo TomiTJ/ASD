@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Accounts — Bank Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/accounts.css}">
-    <title>Customer Account Management</title>
 </head>
 <body>
 <div class="main-layout">
@@ -12,7 +16,7 @@
             <div th:text="${userName}"></div>
             <div class="position" th:text="${userRole}"></div>
         </div>
-        <div class="img-placeholder"> </div>
+        <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
 
     <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
@@ -90,7 +94,8 @@
                         <form th:if="${account.accountStatus == T(com.asd.model.Account.AccountStatus).OPEN}"
                               th:action="@{/account/freeze/{id}(id=${account.id})}"
                               method="post"
-                              style="display:inline;">
+                              style="display:inline;"
+                              onsubmit="return confirm('Freeze this account? The customer will not be able to make transactions.')">
                             <button class="btn-action btn-freeze" type="submit">Freeze</button>
                         </form>
 
@@ -106,7 +111,8 @@
                         <form th:if="${account.accountStatus != T(com.asd.model.Account.AccountStatus).CLOSED}"
                               th:action="@{/account/close/{id}(id=${account.id})}"
                               method="post"
-                              style="display:inline;">
+                              style="display:inline;"
+                              onsubmit="return confirm('Close this account? This action cannot be undone.')">
                             <button class="btn-action btn-close" type="submit">Close</button>
                         </form>
 

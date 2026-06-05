@@ -14,10 +14,10 @@
             <div th:text="${userName}"></div>
             <div class="position" th:text="${userRole}"></div>
         </div>
-        <div class="img-placeholder"></div>
+        <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
     </div>
 
-    <div th:replace="fragments/navbar2 :: navbar2"></div>
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
 
     <div class="main-content-container">
         <!-- Flash Messages -->

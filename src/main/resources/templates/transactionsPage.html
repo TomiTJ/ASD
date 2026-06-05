@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{css/main.css}">
-    <link rel="stylesheet" th:href="@{css/transactions-layout.css}">
-    <title>Transactions</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transactions — Bank Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/transactions-layout.css}">
 </head>
     <body>
     <div class="main-layout">
@@ -12,7 +16,7 @@
                 <div th:text="${userName}"></div>
                 <div class="position" th:text="${userRole}"></div>
             </div>
-            <div class="img-placeholder"> </div>
+            <div class="user-avatar-circle" th:text="${#strings.substring(userName, 0, 2)}">AU</div>
         </div>
 
         <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
@@ -65,7 +69,7 @@
                                 <option value="">Select source</option>
                                 <option th:each="account : ${accounts}"
                                         th:value="${account.id}"
-                                        th:text="${account.accountNumber + ' - ' + account.customerName + ' ($' + account.balance + ')'}">
+                                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
                                 </option>
                             </select>
                         </div>
@@ -75,7 +79,7 @@
                                 <option value="">Select destination</option>
                                 <option th:each="account : ${accounts}"
                                         th:value="${account.id}"
-                                        th:text="${account.accountNumber + ' - ' + account.customerName + ' ($' + account.balance + ')'}">
+                                        th:text="${account.accountNumber + ' — ' + account.customerName + ' ($' + #numbers.formatDecimal(account.balance, 1, 2) + ')'}">
                                 </option>
                             </select>
                         </div>
@@ -101,8 +105,7 @@
                         <th>Type</th>
                         <th>Amount</th>
                         <th>Status</th>
-                        <th>Time Created</th>
-                        <th>Date Created</th>
+                        <th>Created At</th>
                     </tr>
                     <tr th:each="transaction : ${transactions}">
                         <td th:text="${transaction.id}"></td>
@@ -112,8 +115,7 @@
                         <td th:text="${transaction.getType()}"></td>
                         <td th:text="'$' + ${transaction.getAmount()}"></td>
                         <td th:text="${transaction.getStatus()}"></td>
-                        <td th:text="${transaction.getTimeCreatedAt()}"></td>
-                        <td th:text="${transaction.getDateCreatedAt()}"></td>
+                        <td th:text="${transaction.getDateCreatedAt() + ', ' + transaction.getTimeCreatedAt()}"></td>
                     </tr>
                     <tr th:if="${transactions.isEmpty()}">
                         <td colspan="8" style="text-align:center; color: gray;">No transactions found</td>
