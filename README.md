@@ -7,8 +7,8 @@ A full-stack banking administration system built with Spring Boot, PostgreSQL, a
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@bank.local | password |
-| Read Only | viewer@bank.local | password |
+| Admin | admin@bank.local | admin123 |
+| Read Only | viewer@bank.local | viewer123 |
 
 ---
 
@@ -92,13 +92,3 @@ The app is containerised and deployed automatically via GitHub Actions on every 
 - **ALB** — Application Load Balancer for permanent URL and load balancing
 
 ---
-
-## Team
-
-| Feature | Developer |
-|---|---|
-| User & Role Management | Lesandu |
-| Customer & Account Management | Krish |
-| Transactions | Brandon |
-| Audit & Reporting | Tomi |
-| Loan & Credit | Joel |
