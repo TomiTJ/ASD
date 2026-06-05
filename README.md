@@ -7,8 +7,8 @@ A full-stack banking administration system built with Spring Boot, PostgreSQL, a
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@bank.local | password |
-| Read Only | viewer@bank.local | password |
+| Admin | admin@bank.local | admin123 |
+| Read Only | viewer@bank.local | viewer123 |
 
 ---
 
