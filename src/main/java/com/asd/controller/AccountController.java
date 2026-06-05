@@ -5,6 +5,9 @@ import com.asd.dto.AccountDto;
 import com.asd.model.Account;
 import com.asd.repository.CustomerRepository;
 import com.asd.services.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/account")
+@Tag(name = "Accounts", description = "Customer account management")
 public class AccountController {
 
     private final AccountService accountService;
@@ -63,10 +67,12 @@ public class AccountController {
         return "account";
     }
 
-    // API endpoint for modal - Get account details
     @GetMapping("/api/detail/{id}")
     @ResponseBody
-    public ResponseEntity<AccountDetail> getAccountDetailApi(@PathVariable Long id, HttpSession session) {
+    @Operation(summary = "Get account details", description = "Returns full account detail including joint customers")
+    public ResponseEntity<AccountDetail> getAccountDetailApi(
+            @Parameter(description = "Account ID") @PathVariable Long id,
+            HttpSession session) {
         String guard = requireLogin(session);
         if (guard != null) {
             return ResponseEntity.status(401).build();
@@ -80,10 +86,11 @@ public class AccountController {
         }
     }
 
-    // API endpoint for modal - Update account
     @PostMapping("/api/update/{id}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateAccountApi(@PathVariable Long id,
+    @Operation(summary = "Update account", description = "Update account type, status, and balance")
+    public ResponseEntity<Map<String, Object>> updateAccountApi(
+            @Parameter(description = "Account ID") @PathVariable Long id,
                                                                 @RequestParam String accountType,
                                                                 @RequestParam String accountStatus,
                                                                 @RequestParam BigDecimal balance,

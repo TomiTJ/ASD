@@ -5,6 +5,8 @@ import com.asd.dto.TransactionDto;
 import com.asd.dto.TransferRequestDto;
 import com.asd.services.AccountService;
 import com.asd.services.TransactionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@Tag(name = "Transactions", description = "Transaction monitoring and transfers")
 public class TransactionController {
 
     private TransactionService transactionService;

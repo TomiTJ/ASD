@@ -15,13 +15,14 @@ public class SecurityConfig {
         http
                 // CSRF enabled — Thymeleaf th:action auto-injects the token in all forms
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // REST endpoints use session guard, not CSRF tokens
+                        .ignoringRequestMatchers("/api/**", "/v3/api-docs/**") // REST + Swagger endpoints
                 )
-                // Authentication is enforced per-controller via session checks (requireLogin).
-                // Public paths: login page, static assets, and the login POST action.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .anyRequest().permitAll() // session guards in controllers handle the rest
+                        .requestMatchers(
+                                "/login", "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                "/favicon.svg", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form.disable()); // using custom AuthController
 
