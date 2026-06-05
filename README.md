@@ -1,33 +1,104 @@
-We followed a bank admin Monolith Spring Boot App for our project. 
-Features include : 
- - User And Role Management (Lesandu)
- - Customer and Account Management (Krish)
- - Transactions (Brandon)
- - Audit & Reporting (Tomi)
- - Loan & Credit (Joel)
+# Bank Admin Application
 
+A full-stack banking administration system built with Spring Boot, PostgreSQL, and deployed on AWS. The system provides a secure admin portal for managing bank accounts, customers, transactions, loans, and audit logs.
 
+## Live Demo
+**URL:** http://bankadmin-alb-533061711.ap-southeast-1.elb.amazonaws.com
 
-Prerequisites (Tutor Machine)
-	Java 21 (Temurin/Adoptium)
-	•	macOS: brew install --cask temurin
-	•	Ubuntu: sudo apt-get install -y temurin-21-jdk
-	•	Windows: Install Temurin 21 MSI
-	Maven 3.9+
-	•	macOS: brew install maven
-	•	Ubuntu: sudo apt-get install -y maven
-	•	Windows: Chocolatey choco install maven
-	PostgreSQL 14+ (local dev DB)
-	•	macOS: Postgres.app or brew install postgresql@14
-	•	Ubuntu: sudo apt-get install -y postgresql
-	•	Windows: Installer from postgresql.org
- 
-To Run Project: 
-1. Create a Postgresql Database with a user and password that has admin privelleges on the database 
-2. Run the Postgresql on your local machine
-3. Open the project through intellij
-4. go to resources/application.properties - replace the name of database to the one you created, enter the username and password of the database you created.
-5. Press run on intellij
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@bank.local | password |
+| Read Only | viewer@bank.local | password |
 
-The dependencies are all inside the project in pom.xml -> no need to install via your local machines terminal like python
+---
 
+## Features
+
+- **User & Role Management** — Create and manage admin/read-only users with BCrypt password hashing
+- **Customer & Account Management** — Full CRUD for customers and bank accounts (Transactional, Savings, Credit, Business)
+- **Transaction Processing** — View, filter, and export transactions; real account-to-account transfer with balance validation
+- **Audit Logging** — Tracks all user actions with timestamps, resource types, and request IDs
+- **Loan Management** — Submit, approve, and reject loan applications
+- **Reports** — Export data to CSV, Excel, and PDF formats
+- **Security** — Session-based authentication, CSRF protection, role-based access control
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Java 17, Spring Boot 3.5, Spring Security, Spring Data JPA |
+| Database | PostgreSQL 16 |
+| ORM | Hibernate 6 |
+| Frontend | Thymeleaf, HTML/CSS/JS |
+| Containerisation | Docker |
+| Cloud | AWS ECS Fargate, AWS RDS, AWS ECR, AWS ALB |
+| CI/CD | GitHub Actions |
+
+---
+
+## Architecture
+
+```
+GitHub → GitHub Actions → Docker Build → ECR → ECS Fargate
+                                                     ↓
+Users → ALB (permanent URL) → ECS Task (Spring Boot) → RDS PostgreSQL
+```
+
+---
+
+## Running Locally
+
+### Prerequisites
+- Java 17 (Temurin/Adoptium)
+- Maven 3.9+
+- Docker & Docker Compose
+
+### Option A — Docker Compose (recommended)
+```bash
+git clone https://github.com/TomiTJ/ASD.git
+cd ASD
+docker compose up --build
+```
+App runs at `http://localhost:8080` with a local PostgreSQL instance.
+
+### Option B — IntelliJ / Local PostgreSQL
+1. Create a PostgreSQL database and user with admin privileges
+2. Update `src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/<your-db>
+   spring.datasource.username=<your-user>
+   spring.datasource.password=<your-password>
+   ```
+3. Run `BankAdminApplication.java` from IntelliJ
+
+> Dependencies are managed via Maven (`pom.xml`) — no manual installs needed.
+
+---
+
+## Deployment
+
+The app is containerised and deployed automatically via GitHub Actions on every push to `master`:
+
+1. Builds a `linux/amd64` Docker image
+2. Pushes to AWS ECR
+3. Forces a new ECS Fargate deployment
+
+### AWS Infrastructure
+- **ECS Fargate** — serverless container hosting (0.5 vCPU, 1GB RAM)
+- **RDS PostgreSQL 16** — managed database (db.t3.micro)
+- **ECR** — private Docker image registry
+- **ALB** — Application Load Balancer for permanent URL and load balancing
+
+---
+
+## Team
+
+| Feature | Developer |
+|---|---|
+| User & Role Management | Lesandu |
+| Customer & Account Management | Krish |
+| Transactions | Brandon |
+| Audit & Reporting | Tomi |
+| Loan & Credit | Joel |
