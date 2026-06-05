@@ -4,6 +4,66 @@
     <meta charset="utf-8">
     <link rel="stylesheet" th:href="@{css/main.css}">
     <title>Dashboard</title>
+    <style>
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .metric-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .metric-card .label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        .metric-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .metric-card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+        .chart-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .chart-card h3 {
+            margin: 0 0 16px;
+            font-size: 0.95rem;
+            color: #444;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .chart-card canvas {
+            max-height: 240px;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .dashboard-header h2 { margin: 0; }
+    </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
@@ -15,51 +75,76 @@
         </div>
         <div class="img-placeholder"></div>
     </div>
-    <div th:replace="fragments/navbar2 :: navbar2"></div>
+    <div th:replace="~{fragments/navbar2 :: navbar2}"></div>
     <div class="main-content-container">
-        <div>
-            <h2>Welcome, <span th:text="${userName}">User</span>!</h2>
-            <p>Your role: <strong th:text="${userRole}">VIEWER</strong></p>
-            <hr>
-            <div class="metrics">
-                <p>Total Users: <span id ="totalUsers">Loading...</span></p>
-                <p>Total Accounts: <span id ="totalAccounts">Loading...</span></p>
-                <p>Total Transactions: <span id ="totalTransactions">Loading...</span></p>
-            </div>
-            <div style="max-width: 1200px; margin: 16px auto;">
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;">
-                    <div class="card" style="padding:12px;">
-                        <h3 style="margin:0 0 8px;">Transactions (Weekly Data)</h3>
-                        <canvas id="transactionsChart"></canvas>
-                    </div>
-                    <div class="card" style="padding:12px;">
-                        <h3 style="margin:0 0 8px;">Users(Weekly Data)</h3>
-                        <canvas id="usersChart"></canvas>
-                    </div>
-                    <div class="card" style="padding:12px;">
-                        <h3 style="margin:0 0 8px;">Customers(Weekly Data)</h3>
-                        <canvas id="accountsChart"></canvas>
-                    </div>
-                </div>
-            </div>
 
-
-            <script src="dashboard.js"></script>
+        <div class="dashboard-header">
+            <h2>Dashboard</h2>
             <div>
-                <span>
-                    Welcome, <b th:text="${userName}"></b>(<span th:text="${userRole}"></span>)
-                </span>
-                <form method="post" th:action="@{/logout}" style="display:inline">
+                <span>Welcome, <b th:text="${userName}"></b></span>
+                <form method="post" th:action="@{/logout}" style="display:inline; margin-left:12px;">
                     <button type="submit">Logout</button>
                 </form>
             </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="metric-cards">
+            <div class="metric-card">
+                <div class="icon">👥</div>
+                <div class="label">Total Users</div>
+                <div class="value" id="totalUsers">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">🏦</div>
+                <div class="label">Total Accounts</div>
+                <div class="value" id="totalAccounts">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💳</div>
+                <div class="label">Total Transactions</div>
+                <div class="value" id="totalTransactions">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💰</div>
+                <div class="label">Assets Under Management</div>
+                <div class="value" id="totalBalance">—</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+
+            <div class="chart-card">
+                <h3>Transaction Status</h3>
+                <canvas id="txStatusChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Transaction Types</h3>
+                <canvas id="txTypeChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Account Types</h3>
+                <canvas id="accountTypeChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Account Status</h3>
+                <canvas id="accountStatusChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Loan Pipeline</h3>
+                <canvas id="loanChart"></canvas>
+            </div>
+
         </div>
     </div>
     <div class="footer"></div>
 </div>
 
-
-
+<script src="dashboard.js"></script>
 </body>
 </html>
-

@@ -1,70 +1,122 @@
-async function loadMetrics() {
+const COLORS = {
+    green:  '#22c55e',
+    blue:   '#3b82f6',
+    yellow: '#f59e0b',
+    red:    '#ef4444',
+    purple: '#8b5cf6',
+    teal:   '#14b8a6',
+    orange: '#f97316',
+    gray:   '#94a3b8',
+};
+
+function donut(canvasId, labels, values, colors) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{ data: values, backgroundColor: colors, borderWidth: 2 }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 12, font: { size: 12 } } }
+            },
+            cutout: '62%'
+        }
+    });
+}
+
+function bar(canvasId, labels, values, colors, horizontal = false) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
+        type: horizontal ? 'bar' : 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            indexAxis: horizontal ? 'y' : 'x',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+async function loadDashboard() {
     try {
         const res = await fetch('/api/dashboard/metrics');
         if (!res.ok) throw new Error('metrics fetch failed');
-        const data = await res.json();
+        const d = await res.json();
 
-        document.getElementById("totalUsers").textContent = data.totalUsers;
-        document.getElementById("totalAccounts").textContent = data.totalAccounts;
-        document.getElementById("totalTransactions").textContent = data.totalTransactions;
+        // ── Metric cards ──────────────────────────────────────
+        document.getElementById('totalUsers').textContent        = d.totalUsers ?? 0;
+        document.getElementById('totalAccounts').textContent     = d.totalAccounts ?? 0;
+        document.getElementById('totalTransactions').textContent = d.totalTransactions ?? 0;
 
-        const last7Labels = () => {
-            const arr = [];
-            const d = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const x = new Date(d);
-                x.setDate(d.getDate() - i);
-                arr.push(x.toISOString().slice(5, 10)); // MM-DD
-            }
-            return arr;
-        };
+        const bal = d.totalOpenBalance ?? 0;
+        document.getElementById('totalBalance').textContent =
+            '$' + Number(bal).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        const makeTrend = (total) => {
-            total = Number(total || 0);
-            if (total <= 0) return [0, 0, 0, 0, 0, 0, 0];
-            const base = Math.max(1, Math.floor(total / 12));
-            const pts = [base, base * 2, base * 3, base * 5, base * 7, base * 9, total];
-            for (let i = 1; i < pts.length; i++) {
-                if (pts[i] < pts[i - 1]) pts[i] = pts[i - 1];
-            }
-            return pts;
-        };
+        // ── Transaction Status — Donut ────────────────────────
+        const txStatus = d.transactionsByStatus ?? {};
+        donut('txStatusChart',
+            Object.keys(txStatus),
+            Object.values(txStatus),
+            [COLORS.green, COLORS.yellow, COLORS.red, COLORS.orange]
+        );
 
-        const mkLine = (canvasId, label, values) => {
-            const el = document.getElementById(canvasId);
-            if (!el) return;
-            const ctx = el.getContext('2d');
-            return new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: last7Labels(),
-                    datasets: [{
-                        label,
-                        data: values,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: true } },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        };
+        // ── Transaction Types — Bar ───────────────────────────
+        const txType = d.transactionsByType ?? {};
+        bar('txTypeChart',
+            Object.keys(txType),
+            Object.values(txType),
+            [COLORS.blue, COLORS.purple, COLORS.teal]
+        );
 
-        mkLine('transactionsChart', 'Transactions per Day', makeTrend(data.totalTransactions));
-        mkLine('usersChart',        'Users Total Trend',     makeTrend(data.totalUsers));
-        mkLine('accountsChart',     'Customers Total Trend',  makeTrend(data.totalAccounts));
+        // ── Account Types — Donut ─────────────────────────────
+        const accType = d.accountsByType ?? {};
+        donut('accountTypeChart',
+            Object.keys(accType),
+            Object.values(accType),
+            [COLORS.blue, COLORS.green, COLORS.orange, COLORS.purple]
+        );
+
+        // ── Account Status — Bar ──────────────────────────────
+        const accStatus = d.accountsByStatus ?? {};
+        bar('accountStatusChart',
+            Object.keys(accStatus),
+            Object.values(accStatus),
+            [COLORS.green, COLORS.yellow, COLORS.gray]
+        );
+
+        // ── Loan Pipeline — Donut ─────────────────────────────
+        const loans = d.loansByStatus ?? {};
+        donut('loanChart',
+            Object.keys(loans),
+            Object.values(loans),
+            [COLORS.yellow, COLORS.green, COLORS.red]
+        );
 
     } catch (e) {
-        console.error('Error loading metrics:', e);
-        // fail-soft UI
-        ['totalUsers','totalAccounts','totalTransactions'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.textContent === 'Loading...') el.textContent = '0';
-        });
+        console.error('Dashboard error:', e);
+        ['totalUsers', 'totalAccounts', 'totalTransactions', 'totalBalance']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.textContent === '—') el.textContent = '—';
+            });
     }
 }
 
-window.addEventListener('load', loadMetrics);
+window.addEventListener('load', loadDashboard);
